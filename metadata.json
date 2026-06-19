@@ -1,0 +1,8 @@
+{
+  "name": "Remix: إدارة محفظة العملاء - Client Wallet Management",
+  "description": "تطبيق لإدارة محفظة العملاء والتواصل معهم وحساب الخصومات وتحصيل الديون بدقة متناهية.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
