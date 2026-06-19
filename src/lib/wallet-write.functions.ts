@@ -31,7 +31,7 @@ export const clearWalletCustomers = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     console.log("[clearWalletCustomers] Calling truncate_wallet_tables RPC...");
     try {
-      const { error } = await supabaseAdmin.rpc("truncate_wallet_tables" as any);
+      const { error } = await supabaseAdmin.rpc("truncate_wallet_tables");
       if (error) {
         console.error("[clearWalletCustomers] RPC error:", error);
         throw new Error(error.message);
@@ -90,7 +90,7 @@ export const replaceWalletCustomers = createServerFn({ method: "POST" })
     if (data.employeeId !== ADMIN_EMPLOYEE_ID) throw new Error("Unauthorized");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     console.log(`[replaceWalletCustomers] Replacing wallet with ${data.rows.length} rows...`);
-    const { error: clearErr } = await supabaseAdmin.rpc("truncate_wallet_tables" as any);
+    const { error: clearErr } = await supabaseAdmin.rpc("truncate_wallet_tables");
     if (clearErr) throw new Error(clearErr.message);
     try {
       const CHUNK = 500;
@@ -102,7 +102,7 @@ export const replaceWalletCustomers = createServerFn({ method: "POST" })
       console.log("[replaceWalletCustomers] Replacement completed.");
       return { inserted: data.rows.length };
     } catch (err) {
-      await supabaseAdmin.rpc("truncate_wallet_tables" as any);
+      await supabaseAdmin.rpc("truncate_wallet_tables");
       throw err;
     }
   });
