@@ -47,7 +47,7 @@ export const clearWalletCustomers = createServerFn({ method: "POST" })
 
 const AppendInput = z.object({
   employeeId: z.string(),
-  rows: z.array(RowSchema).max(6000),
+  rows: z.array(RowSchema).max(50000),
 });
 
 export const appendWalletCustomers = createServerFn({ method: "POST" })

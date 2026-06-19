@@ -276,7 +276,7 @@ function WalletViewPage() {
           data: {
             role: session.role,
             employeeId: session.employeeId,
-            forceAll: true,
+            forceAll: view === "wallet",
           },
         });
 
@@ -287,7 +287,7 @@ function WalletViewPage() {
         setLoading(false);
       }
     })();
-  }, [loadFn]);
+  }, [loadFn, view]);
 
   const viewRows = useMemo(() => {
     const session = getSession();
