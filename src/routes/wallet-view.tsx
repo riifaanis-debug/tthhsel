@@ -79,7 +79,7 @@ export const Route = createFileRoute("/wallet-view")({
   component: WalletViewPage,
 });
 
-type ColType = "currency" | "phone" | "yesno" | "editText" | "reqType" | "action";
+type ColType = "currency" | "phone" | "yesno" | "editText" | "editNumber" | "editMoney" | "date" | "reqType" | "action";
 
 const COLUMNS: { key: string; label: string; type?: ColType }[] = [
   { key: "رقم الحساب", label: "رقم الحساب" },
@@ -87,7 +87,7 @@ const COLUMNS: { key: string; label: string; type?: ColType }[] = [
   { key: "NOTE", label: "NOTE" },
   { key: "الاكشن", label: "الاكشن", type: "action" },
   { key: "نوع المنتج", label: "نوع المنتج" },
-  { key: "تاريخ التجميد", label: "تاريخ التجميد" },
+  { key: "تاريخ التجميد", label: "تاريخ التجميد", type: "date" },
   { key: "jWO_DT", label: "jWO_DT" },
   { key: "عمر الدين", label: "عمر الدين" },
   { key: "رقم الهوية", label: "رقم الهوية" },
@@ -103,10 +103,10 @@ const COLUMNS: { key: string; label: string; type?: ColType }[] = [
   { key: "سند غير مؤرشف", label: "سند غير مؤرشف", type: "yesno" },
   { key: "رقم القضية", label: "رقم القضية" },
   { key: "اسم المحكمة", label: "اسم المحكمة" },
-  { key: "رقم مرجع الحجز التنفيذي", label: "رقم مرجع الحجز التنفيذي", type: "editText" },
-  { key: "أرصدة محجوزة", label: "أرصدة محجوزة", type: "editText" },
-  { key: "السداد", label: "السداد", type: "editText" },
-  { key: "رقم طلب سبيل", label: "رقم طلب سيبل", type: "editText" },
+  { key: "رقم مرجع الحجز التنفيذي", label: "رقم مرجع الحجز التنفيذي", type: "editNumber" },
+  { key: "أرصدة محجوزة", label: "أرصدة محجوزة", type: "editMoney" },
+  { key: "السداد", label: "السداد", type: "editMoney" },
+  { key: "رقم طلب سبيل", label: "رقم طلب سيبل", type: "editNumber" },
   { key: "نوع الطلب", label: "نوع الطلب", type: "reqType" },
   { key: "الوصف", label: "الوصف" },
 ];
@@ -250,10 +250,9 @@ function isCurrentCollectorRow(row: any, session: any): boolean {
 
 function WalletViewPage() {
   const { view } = Route.useSearch();
-  const readOnly = true;
+  const readOnly = view === "wallet";
   const loadFn = useServerFn(getWalletCustomers);
-  const { states } = useCustomerStates();
-  const update = (_k: string, _p: any) => {};
+  const { states, update } = useCustomerStates();
 
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -617,19 +616,45 @@ function WalletViewPage() {
                           );
                         }
 
-                        if (c.type === "editText") {
+                        if (c.type === "date") {
+                          if (readOnly) {
+                            return (
+                              <TableCell key={c.key} dir="rtl" className={baseCls}>
+                                {eff || "—"}
+                              </TableCell>
+                            );
+                          }
+                          const dateVal = /^\d{4}-\d{2}-\d{2}/.test(eff) ? eff.slice(0, 10) : "";
+                          return (
+                            <TableCell key={c.key} dir="rtl" className={baseCls}>
+                              <Input
+                                type="date"
+                                defaultValue={dateVal}
+                                onBlur={(e) => {
+                                  if (e.target.value !== dateVal) setEdit(key, c.key, e.target.value);
+                                }}
+                                className="h-7 text-[11px] px-2 text-center"
+                              />
+                            </TableCell>
+                          );
+                        }
+
+                        if (c.type === "editText" || c.type === "editNumber" || c.type === "editMoney") {
+                          const numeric = c.type === "editNumber" || c.type === "editMoney";
                           return (
                             <TableCell key={c.key} dir="rtl" className={baseCls}>
                               {readOnly ? (
                                 eff || "—"
                               ) : (
                                 <Input
+                                  type={numeric ? "number" : "text"}
+                                  inputMode={numeric ? "decimal" : undefined}
                                   defaultValue={eff}
                                   onBlur={(e) => {
                                     if (e.target.value !== eff) setEdit(key, c.key, e.target.value);
                                   }}
                                   className={`h-7 text-[11px] px-2 ${
-                                    isMoney ? "text-right" : "text-center"
+                                    isMoney || c.type === "editMoney" || numeric ? "text-right" : "text-center"
                                   }`}
                                 />
                               )}
