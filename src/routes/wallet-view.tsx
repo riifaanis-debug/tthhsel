@@ -79,7 +79,7 @@ export const Route = createFileRoute("/wallet-view")({
   component: WalletViewPage,
 });
 
-type ColType = "currency" | "phone" | "yesno" | "editText" | "reqType" | "action";
+type ColType = "currency" | "phone" | "yesno" | "editText" | "editNumber" | "editMoney" | "date" | "reqType" | "action";
 
 const COLUMNS: { key: string; label: string; type?: ColType }[] = [
   { key: "رقم الحساب", label: "رقم الحساب" },
@@ -87,7 +87,7 @@ const COLUMNS: { key: string; label: string; type?: ColType }[] = [
   { key: "NOTE", label: "NOTE" },
   { key: "الاكشن", label: "الاكشن", type: "action" },
   { key: "نوع المنتج", label: "نوع المنتج" },
-  { key: "تاريخ التجميد", label: "تاريخ التجميد" },
+  { key: "تاريخ التجميد", label: "تاريخ التجميد", type: "date" },
   { key: "jWO_DT", label: "jWO_DT" },
   { key: "عمر الدين", label: "عمر الدين" },
   { key: "رقم الهوية", label: "رقم الهوية" },
@@ -103,10 +103,10 @@ const COLUMNS: { key: string; label: string; type?: ColType }[] = [
   { key: "سند غير مؤرشف", label: "سند غير مؤرشف", type: "yesno" },
   { key: "رقم القضية", label: "رقم القضية" },
   { key: "اسم المحكمة", label: "اسم المحكمة" },
-  { key: "رقم مرجع الحجز التنفيذي", label: "رقم مرجع الحجز التنفيذي", type: "editText" },
-  { key: "أرصدة محجوزة", label: "أرصدة محجوزة", type: "editText" },
-  { key: "السداد", label: "السداد", type: "editText" },
-  { key: "رقم طلب سبيل", label: "رقم طلب سيبل", type: "editText" },
+  { key: "رقم مرجع الحجز التنفيذي", label: "رقم مرجع الحجز التنفيذي", type: "editNumber" },
+  { key: "أرصدة محجوزة", label: "أرصدة محجوزة", type: "editMoney" },
+  { key: "السداد", label: "السداد", type: "editMoney" },
+  { key: "رقم طلب سبيل", label: "رقم طلب سيبل", type: "editNumber" },
   { key: "نوع الطلب", label: "نوع الطلب", type: "reqType" },
   { key: "الوصف", label: "الوصف" },
 ];
