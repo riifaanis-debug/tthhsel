@@ -409,7 +409,7 @@ function FeatureSlider() {
               key={i}
               className="absolute inset-0 h-full w-full transition-transform duration-[800ms] ease-in-out will-change-transform bg-black flex items-center justify-center"
               style={{
-                transform: `translateX(${(i - idx) * 100}%)`,
+                transform: `translateX(${(idx - i) * 100}%)`,
               }}
             >
               <img
