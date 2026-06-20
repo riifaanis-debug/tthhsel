@@ -1,11 +1,11 @@
 {
-  "asset_id": "cd598577-4708-4554-8cef-107d2fac3075",
-  "content_type": "image/jpeg",
-  "created_at": "2026-06-18T05:31:59Z",
-  "original_filename": "ql-calc.jpeg",
-  "project_id": "7bbf58cc-ace0-41b7-b233-d0cd8e20f158",
-  "r2_key": "a/v1/7bbf58cc-ace0-41b7-b233-d0cd8e20f158/cd598577-4708-4554-8cef-107d2fac3075/ql-calc.jpeg",
-  "size": 174507,
-  "url": "/__l5e/assets-v1/cd598577-4708-4554-8cef-107d2fac3075/ql-calc.jpeg",
-  "version": 1
+  "version": 1,
+  "asset_id": "7291db56-14d4-4701-a4ff-6300167d7be2",
+  "project_id": "3d02d420-7152-41e0-9a6a-a041abd26a13",
+  "url": "/__l5e/assets-v1/7291db56-14d4-4701-a4ff-6300167d7be2/ql-calc.png",
+  "r2_key": "a/v1/3d02d420-7152-41e0-9a6a-a041abd26a13/7291db56-14d4-4701-a4ff-6300167d7be2/ql-calc.png",
+  "original_filename": "ql-calc.png",
+  "size": 2340467,
+  "content_type": "image/png",
+  "created_at": "2026-06-20T10:32:06Z"
 }
