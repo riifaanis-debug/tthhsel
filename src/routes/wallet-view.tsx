@@ -616,19 +616,45 @@ function WalletViewPage() {
                           );
                         }
 
-                        if (c.type === "editText") {
+                        if (c.type === "date") {
+                          if (readOnly) {
+                            return (
+                              <TableCell key={c.key} dir="rtl" className={baseCls}>
+                                {eff || "—"}
+                              </TableCell>
+                            );
+                          }
+                          const dateVal = /^\d{4}-\d{2}-\d{2}/.test(eff) ? eff.slice(0, 10) : "";
+                          return (
+                            <TableCell key={c.key} dir="rtl" className={baseCls}>
+                              <Input
+                                type="date"
+                                defaultValue={dateVal}
+                                onBlur={(e) => {
+                                  if (e.target.value !== dateVal) setEdit(key, c.key, e.target.value);
+                                }}
+                                className="h-7 text-[11px] px-2 text-center"
+                              />
+                            </TableCell>
+                          );
+                        }
+
+                        if (c.type === "editText" || c.type === "editNumber" || c.type === "editMoney") {
+                          const numeric = c.type === "editNumber" || c.type === "editMoney";
                           return (
                             <TableCell key={c.key} dir="rtl" className={baseCls}>
                               {readOnly ? (
                                 eff || "—"
                               ) : (
                                 <Input
+                                  type={numeric ? "number" : "text"}
+                                  inputMode={numeric ? "decimal" : undefined}
                                   defaultValue={eff}
                                   onBlur={(e) => {
                                     if (e.target.value !== eff) setEdit(key, c.key, e.target.value);
                                   }}
                                   className={`h-7 text-[11px] px-2 ${
-                                    isMoney ? "text-right" : "text-center"
+                                    isMoney || c.type === "editMoney" || numeric ? "text-right" : "text-center"
                                   }`}
                                 />
                               )}
