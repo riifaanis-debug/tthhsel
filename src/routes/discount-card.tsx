@@ -322,7 +322,7 @@ function DiscountCardPage() {
                 right: 60,
                 left: 60,
                 direction: "rtl",
-                textAlign: "right",
+                textAlign: "center",
               }}
             >
               <div>
