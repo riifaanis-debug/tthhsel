@@ -250,10 +250,9 @@ function isCurrentCollectorRow(row: any, session: any): boolean {
 
 function WalletViewPage() {
   const { view } = Route.useSearch();
-  const readOnly = true;
+  const readOnly = view === "wallet";
   const loadFn = useServerFn(getWalletCustomers);
-  const { states } = useCustomerStates();
-  const update = (_k: string, _p: any) => {};
+  const { states, update } = useCustomerStates();
 
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
