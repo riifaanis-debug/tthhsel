@@ -1,11 +1,11 @@
 {
-  "asset_id": "234ea503-bcd3-426c-a350-53d1a4db4cdf",
-  "content_type": "image/jpeg",
-  "created_at": "2026-06-18T05:31:54Z",
-  "original_filename": "ql-lookup.jpeg",
-  "project_id": "7bbf58cc-ace0-41b7-b233-d0cd8e20f158",
-  "r2_key": "a/v1/7bbf58cc-ace0-41b7-b233-d0cd8e20f158/234ea503-bcd3-426c-a350-53d1a4db4cdf/ql-lookup.jpeg",
-  "size": 179374,
-  "url": "/__l5e/assets-v1/234ea503-bcd3-426c-a350-53d1a4db4cdf/ql-lookup.jpeg",
-  "version": 1
+  "version": 1,
+  "asset_id": "bd59f418-a995-4900-a1f8-4936cb1609bc",
+  "project_id": "3d02d420-7152-41e0-9a6a-a041abd26a13",
+  "url": "/__l5e/assets-v1/bd59f418-a995-4900-a1f8-4936cb1609bc/ql-lookup.png",
+  "r2_key": "a/v1/3d02d420-7152-41e0-9a6a-a041abd26a13/bd59f418-a995-4900-a1f8-4936cb1609bc/ql-lookup.png",
+  "original_filename": "ql-lookup.png",
+  "size": 2341700,
+  "content_type": "image/png",
+  "created_at": "2026-06-20T10:32:07Z"
 }
