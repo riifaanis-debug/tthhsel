@@ -322,7 +322,7 @@ function DiscountCardPage() {
                 right: 60,
                 left: 60,
                 direction: "rtl",
-                textAlign: "right",
+                textAlign: "center",
               }}
             >
               <div>
@@ -566,7 +566,7 @@ function DiscountCardPage() {
                   background: "#ffffff",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "flex-end",
+                  justifyContent: "flex-start",
                   padding: "0 12px",
                   paddingLeft: "60px",
                   position: "relative",
@@ -645,7 +645,7 @@ function DiscountCardPage() {
                   background: "#ffffff",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "flex-end",
+                  justifyContent: "flex-start",
                   padding: "0 12px",
                   paddingLeft: "60px",
                   position: "relative",
