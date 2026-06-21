@@ -192,6 +192,12 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
       desc: "التحكم بصلاحيات العرض والحساب والتصدير والإدارة",
       icon: KeyRound,
     },
+    {
+      id: "backups",
+      title: "النسخ الاحتياطية للمحافظ",
+      desc: "عرض واسترجاع النسخ الاحتياطية للمحافظ (للإدارة فقط)",
+      icon: Archive,
+    },
   ];
 
   const clearCache = async () => {
