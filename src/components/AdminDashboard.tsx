@@ -40,6 +40,12 @@ import { clearSession, DISABLED_KEY } from "@/components/LoginGate";
 import { useServerFn } from "@tanstack/react-start";
 import { getCollectorsStats } from "@/lib/collectors-stats.functions";
 import { clearWalletCustomers } from "@/lib/wallet-write.functions";
+import {
+  listWalletBackups,
+  restoreWalletBackup,
+  deleteWalletBackup,
+} from "@/lib/wallet-backups.functions";
+import { Archive, RotateCcw } from "lucide-react";
 
 type Collector = { supervisor: string; collector: string; employeeId: string };
 const BASE_COLLECTORS = collectors as Collector[];
