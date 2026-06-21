@@ -720,20 +720,12 @@ function FullWalletDialog({
                               onValueChange={(val) => patchEdit(row, "الاكشن", val)}
                             >
                               <SelectTrigger
-                                className="h-5 min-w-[100px] text-[10px] px-1 mx-auto justify-end text-right flex-row-reverse"
-                                style={
-                                  cur
-                                    ? {
-                                        color: cur.color,
-                                        borderColor: cur.color,
-                                        backgroundColor: `${cur.color}15`,
-                                      }
-                                    : undefined
-                                }
+                                className="h-5 min-w-[100px] text-[10px] px-1 mx-auto justify-end text-right flex-row-reverse border-0 bg-transparent shadow-none focus:ring-0"
+                                style={cur ? { color: cur.color } : undefined}
                               >
                                 <SelectValue placeholder="" />
                               </SelectTrigger>
-                              <SelectContent dir="rtl" align="start" className="min-w-[140px]">
+                              <SelectContent dir="rtl" align="end" className="min-w-[140px] text-right">
                                 {ACTION_OPTIONS.map((o) => (
                                   <SelectItem
                                     key={o.value}
@@ -825,7 +817,7 @@ function FullWalletDialog({
                       // ---- Phone: international format ----
                       if (c.h === "رقم الجوال") {
                         return (
-                          <td key={c.h} className={cellCls}>
+                          <td key={c.h} dir="ltr" className={cellCls}>
                             {intlPhone(v)}
                           </td>
                         );
