@@ -1002,7 +1002,9 @@ function CustomerSheet({
 
   // حساب التسوية (يجب أن تُستدعى الـHooks قبل أي return مبكر)
   // تاريخ التجميد / التعثر = JWO_DT - 3 months (computed, never manual).
-  const defaultDate: string = freezeFromJwo(readJwo(customer)) || "";
+  const computedFreeze: string = freezeFromJwo(readJwo(customer)) || "";
+  const freezeOverride = (state?.edits as any)?.["تاريخ التجميد"] as string | undefined;
+  const defaultDate: string = (freezeOverride && String(freezeOverride)) || computedFreeze;
 
   const productRaw = String(customer?.["المنتج"] || "").toUpperCase();
   const product: ProductType = productRaw.includes("AL")
@@ -1164,8 +1166,7 @@ function CustomerSheet({
                   return e[k] ?? state?.paymentAmount ?? c[k] ?? null;
                 }
                 if (k === "تاريخ التجميد") {
-                  // Always computed from JWO_DT - 3 months; ignore edits/state.
-                  return freezeFromJwo(readJwo(c)) || null;
+                  return defaultDate || null;
                 }
 
                 return (e[k] ?? c[k]) as any;
@@ -1237,7 +1238,7 @@ function CustomerSheet({
                 <div className="space-y-2.5 text-right font-sans" dir="rtl">
                   {/* الصف 1: رقم الحساب | نوع المنتج */}
                   <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <EditField label="رقم الحساب" icon={<CreditCard className="size-3" />}>
                         <Input
                           value={get("رقم الحساب") || ""}
@@ -1249,11 +1250,20 @@ function CustomerSheet({
                       </EditField>
                       <EditField label="نوع المنتج" icon={<Tag className="size-3" />}>
                         <Input
-                          value={get("نوع المنتج") ?? get("المنتج") ?? ""}
+                          value={String(get("نوع المنتج") ?? get("المنتج") ?? "").toUpperCase()}
                           readOnly
                           inputMode="none"
                           onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} cursor-default`}
+                          className={`${inputCls} cursor-default text-center font-bold`}
+                        />
+                      </EditField>
+                      <EditField label="NOTE" icon={<FileText className="size-3" />}>
+                        <Input
+                          value={String(get("NOTE") ?? get("Note") ?? get("note") ?? get("ملاحظة") ?? "")}
+                          readOnly
+                          inputMode="none"
+                          onFocus={(e) => e.currentTarget.blur()}
+                          className={`${inputCls} cursor-default text-center`}
                         />
                       </EditField>
                     </div>
@@ -1308,61 +1318,81 @@ function CustomerSheet({
                     </div>
                   </div>
 
-                  {/* صف الشارات: تقييم أعمال | عميل متوفي | عميل رواتب */}
+                  {/* صف الشارات: تقييم أعمال | عميل متوفي | عميل رواتب — YES/NO */}
                   <div className="grid grid-cols-3 gap-2">
-                    <StatusPill
+                    <YesNoPill
                       label="تقييم أعمال"
                       icon={<BarChart3 className="size-3.5 text-[#7B3FE4]" />}
-                      bg="bg-[#F5F0FF]"
-                      active={isOn("تقييم أعمال")}
-                      onClick={() => {
-                        const next = isOn("تقييم أعمال") ? "لا" : "نعم";
-                        setEdit({ "تقييم أعمال": next, "تقييم الأعمال": next });
-                      }}
+                      tone="purple"
+                      value={isOn("تقييم أعمال") ? "yes" : (get("تقييم أعمال") || get("تقييم الأعمال")) ? "no" : null}
+                      onChange={(v) => setEdit({ "تقييم أعمال": v === "yes" ? "نعم" : "لا", "تقييم الأعمال": v === "yes" ? "نعم" : "لا" })}
                     />
-                    <StatusPill
+                    <YesNoPill
                       label="عميل متوفي"
                       icon={<UserX className="size-3.5 text-[#E11D48]" />}
-                      bg="bg-[#FFF1F2]"
-                      active={isOn("عميل متوفي")}
-                      onClick={() => toggleYesNo({}, "عميل متوفي")}
+                      tone="red"
+                      value={isOn("عميل متوفي") ? "yes" : get("عميل متوفي") ? "no" : null}
+                      onChange={(v) => setEdit({ "عميل متوفي": v === "yes" ? "نعم" : "لا" })}
                     />
-                    <StatusPill
+                    <YesNoPill
                       label="عميل رواتب"
-                      icon={<UsersRound className="size-3.5 text-[#234E45]" />}
-                      bg="bg-white"
-                      active={isOn("عميل رواتب")}
-                      onClick={() => toggleYesNo({}, "عميل رواتب")}
+                      icon={<UsersRound className="size-3.5 text-[#0E8F4F]" />}
+                      tone="green"
+                      value={isOn("عميل رواتب") ? "yes" : get("عميل رواتب") ? "no" : null}
+                      onChange={(v) => setEdit({ "عميل رواتب": v === "yes" ? "نعم" : "لا" })}
                     />
                   </div>
 
-                  {/* رقم طلب سيبل + نوع الطلب (للعرض فقط) */}
+                  {/* رقم طلب سيبل + نوع الطلب (قابلين للتعديل) */}
                   <div className="rounded-xl border border-[#e8e6e1] bg-white p-2">
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="relative">
+                      <EditField label="رقم طلب سيبل" icon={<FileText className="size-3" />}>
                         <Input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           value={sibylVal}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(ev) => ev.currentTarget.blur()}
-                          className={`${inputCls} cursor-default pr-20`}
+                          onChange={(ev) => {
+                            const val = ev.target.value.replace(/[^0-9]/g, "");
+                            setEdit({ "رقم طلب سيبل": val, "رقم طلب سبيل": val });
+                          }}
+                          className={`${inputCls} tabular-nums`}
                         />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#234E45] font-semibold flex items-center gap-1 whitespace-nowrap pointer-events-none">
-                          <FileText className="size-3" /> رقم طلب سيبل
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-[11px] text-[#234E45] font-semibold flex items-center gap-1 whitespace-nowrap">
-                          <FileText className="size-3.5" /> نوع الطلب
-                        </div>
-                        <Input
-                          value={requestDisplay}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(ev) => ev.currentTarget.blur()}
-                          className={`${inputCls} flex-1 cursor-default ${requestToneCls}`}
-                        />
-                      </div>
+                      </EditField>
+                      <EditField label="نوع الطلب" icon={<FileText className="size-3" />}>
+                        <Select
+                          value={
+                            isOn("طلب اعفاء") || hasExemptionFromBase
+                              ? "إعفاء"
+                              : isOn("طلب جدولة") || hasRescheduleFromBase
+                                ? "جدولة"
+                                : ""
+                          }
+                          onValueChange={(v) => {
+                            if (v === "إعفاء") {
+                              setEdit({
+                                "نوع الطلب": "إعفاء متوفين",
+                                "طلب اعفاء": "نعم",
+                                "طلب جدولة": "لا",
+                              });
+                            } else {
+                              setEdit({
+                                "نوع الطلب": "إعادة جدولة",
+                                "طلب اعفاء": "لا",
+                                "طلب جدولة": "نعم",
+                              });
+                            }
+                          }}
+                        >
+                          <SelectTrigger className={`${inputCls} ${requestToneCls}`}>
+                            <SelectValue placeholder="اختر نوع الطلب" />
+                          </SelectTrigger>
+                          <SelectContent dir="rtl">
+                            <SelectItem value="إعفاء">طلب إعفاء</SelectItem>
+                            <SelectItem value="جدولة">طلب جدولة</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </EditField>
                     </div>
                   </div>
 
@@ -1387,49 +1417,46 @@ function CustomerSheet({
                       />
                     </EditField>
                     <EditField label="تاريخ التجميد" icon={<Snowflake className="size-3" />}>
-                      <Input
-                        value={defaultDate}
-                        readOnly
-                        inputMode="none"
-                        onFocus={(ev) => ev.currentTarget.blur()}
-                        title="محسوب تلقائياً من JWO_DT − 3 أشهر"
-                        className={`${inputCls} cursor-default text-center`}
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className={`${inputCls} text-center w-full flex items-center justify-center gap-1 px-2`}
+                          >
+                            <span className="tabular-nums">{defaultDate || "—"}</span>
+                            <Calendar className="size-3 text-[#234E45]" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="center">
+                          <CalendarPicker
+                            mode="single"
+                            selected={defaultDate ? new Date(defaultDate) : undefined}
+                            onSelect={(d) => {
+                              if (!d) return;
+                              const yyyy = d.getFullYear();
+                              const mm = String(d.getMonth() + 1).padStart(2, "0");
+                              const dd = String(d.getDate()).padStart(2, "0");
+                              setEdit({ "تاريخ التجميد": `${yyyy}-${mm}-${dd}` });
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </EditField>
                   </div>
 
-                  {/* الصف: سنوات التعثر | نسبة الخصم | مبلغ التسوية — يظهر فقط عند تحديد تاريخ التجميد */}
-                  {settlement && (
-                    <div className="grid grid-cols-3 gap-2">
-                      <EditField label="سنوات التعثر" icon={<Clock className="size-3" />}>
-                        <Input
-                          value={settlement.years.toFixed(1)}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} tabular-nums cursor-default text-center`}
-                        />
-                      </EditField>
-                      <EditField label="نسبة الخصم" icon={<Coins className="size-3" />}>
-                        <Input
-                          value={`${(settlement.rate * 100).toFixed(0)}%`}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} tabular-nums cursor-default text-center text-emerald-600 font-bold`}
-                        />
-                      </EditField>
-                      <EditField label="مبلغ التسوية" icon={<Wallet className="size-3" />}>
-                        <Input
-                          value={formatCurrency(settlement.settle)}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} tabular-nums cursor-default text-center font-bold`}
-                        />
-                      </EditField>
-                    </div>
-                  )}
+                  {/* صف الحاسبات: حاسبة التاريخ (يمين) | حاسبة الخصم (يسار) */}
+                  <DualCalculators
+                    debtAmount={Number(c["مبلغ المديونية"] ?? c["المبلغ"]) || 0}
+                    freezeDate={defaultDate}
+                  />
+
+                  {/* ملاحظة أسفل الحاسبات */}
+                  <div className="flex items-start gap-1.5 text-[10px] text-[#7A6A4F] bg-[#FFFBEB] border border-[#FDE68A] rounded-lg p-2">
+                    <AlertTriangle className="size-3 mt-0.5 text-[#D97706] shrink-0" />
+                    <p className="leading-snug text-right">
+                      مبلغ التسوية النهائي الصادر هو بشكل تقريبي، يرجى التأكد من تاريخ التجميد المدون في شاشة NBL وبسياسة الخصم المتبعة للشهر الحالي.
+                    </p>
+                  </div>
 
                   {/* الصف: رقم القضية | اسم المحكمة | أرصدة محجوزة */}
                   <div className="grid grid-cols-3 gap-2">
@@ -1487,21 +1514,8 @@ function CustomerSheet({
                     </EditField>
                   </div>
 
-                  {/* الصف: رقم مرجع الحجز | محجوز لصالح البنك */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <EditField label="رقم مرجع الحجز" icon={<Bookmark className="size-3" />}>
-                      <Input
-                        value={get("رقم مرجع الحجز التنفيذي") ?? get("مرجع الحجز التنفيذي") ?? ""}
-                        onChange={(ev) => {
-                          const val = ev.target.value;
-                          setEdit({
-                            "رقم مرجع الحجز التنفيذي": val,
-                            "مرجع الحجز التنفيذي": val,
-                          });
-                        }}
-                        className={inputCls}
-                      />
-                    </EditField>
+                  {/* الصف: محجوز لصالح البنك | الإجراء (رقم مرجع الحجز) | بطاقة ناجز */}
+                  <div className="grid grid-cols-3 gap-2">
                     <StatusPill
                       label="محجوز لصالح البنك"
                       icon={<Coins className="size-3.5 text-[#234E45]" />}
@@ -1510,6 +1524,31 @@ function CustomerSheet({
                       active={isBankSeizedOn}
                       onClick={() => toggleYesNo({}, "المبلغ المحجوز لصالح البنك")}
                     />
+                    <EditField label="الإجراء: الحجز التنفيذي - الرقم المرجعي" icon={<Bookmark className="size-3" />}>
+                      <Input
+                        value={get("رقم مرجع الحجز التنفيذي") ?? get("مرجع الحجز التنفيذي") ?? ""}
+                        onChange={(ev) => {
+                          const val = ev.target.value.replace(/[^0-9]/g, "");
+                          setEdit({
+                            "رقم مرجع الحجز التنفيذي": val,
+                            "مرجع الحجز التنفيذي": val,
+                          });
+                        }}
+                        inputMode="numeric"
+                        placeholder="ادخل الرقم المرجعي"
+                        className={`${inputCls} tabular-nums`}
+                      />
+                    </EditField>
+                    <button
+                      type="button"
+                      onClick={() => window.open("https://najiz.sa/applications/iexecution/Inquiry", "_blank")}
+                      className="rounded-xl bg-gradient-to-l from-[#EFE7D1] to-[#F7F3E5] border border-[#D9C792] p-2 flex items-center justify-center gap-1 hover:shadow-md transition-all"
+                    >
+                      <span className="text-[10px] font-bold text-[#7B5E1F] text-center leading-tight">
+                        التحقق من<br />طلب تنفيذ
+                      </span>
+                      <span className="text-[11px] font-extrabold text-[#A37B1A]">ناجز</span>
+                    </button>
                   </div>
 
                   {/* مبلغ السداد | نوع السداد */}
@@ -1641,6 +1680,36 @@ function CustomerSheet({
                 </div>
               </div>
             ) : null}
+
+            {/* أزرار أسفل الصفحة: حفظ | إغلاق */}
+            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-dashed">
+              <Button
+                type="button"
+                onClick={() => {
+                  const trimmed = noteDraft.trim();
+                  if (trimmed) {
+                    const prev = state?.noteLog || [];
+                    onUpdate({
+                      noteLog: [...prev, { date: new Date().toISOString(), text: trimmed }],
+                    });
+                  }
+                  setNoteDraft("");
+                  setDirty(false);
+                  toast.success("تم حفظ الإجراءات");
+                }}
+                className="h-10 bg-[#0E8F4F] hover:bg-[#0a7a42] text-white font-bold rounded-xl"
+              >
+                💾 حفظ
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={requestClose}
+                className="h-10 border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 font-bold rounded-xl"
+              >
+                ✕ إغلاق
+              </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
@@ -1877,5 +1946,178 @@ function StatusPill({
         {active ? "✓ YES" : "✕ NO"}
       </span>
     </button>
+  );
+}
+
+function YesNoPill({
+  label,
+  icon,
+  tone,
+  value,
+  onChange,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  tone: "green" | "red" | "purple";
+  value: "yes" | "no" | null;
+  onChange: (v: "yes" | "no") => void;
+}) {
+  const toneMap = {
+    green: { bgYes: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700", yesBtn: "bg-emerald-100 text-emerald-700 border-emerald-300", noBtn: "bg-gray-100 text-gray-500 border-gray-200" },
+    red: { bgYes: "bg-rose-50", border: "border-rose-200", text: "text-rose-700", yesBtn: "bg-rose-100 text-rose-700 border-rose-300", noBtn: "bg-gray-100 text-gray-500 border-gray-200" },
+    purple: { bgYes: "bg-violet-50", border: "border-violet-200", text: "text-violet-700", yesBtn: "bg-violet-100 text-violet-700 border-violet-300", noBtn: "bg-gray-100 text-gray-500 border-gray-200" },
+  } as const;
+  const t = toneMap[tone];
+  const cardBg = value === "yes" ? t.bgYes : "bg-white";
+  const cardOpacity = value === "no" ? "opacity-60" : "";
+  return (
+    <div className={`rounded-xl border ${t.border} ${cardBg} ${cardOpacity} p-1.5 flex flex-col gap-1.5 transition-all`}>
+      <div dir="rtl" className={`flex items-center justify-end gap-1 text-[10px] font-bold ${t.text}`}>
+        <span className="truncate">{label}</span>
+        {icon}
+      </div>
+      <div className="grid grid-cols-2 gap-1">
+        <button
+          type="button"
+          onClick={() => onChange("yes")}
+          className={`h-6 rounded-md border text-[10px] font-bold transition-all ${value === "yes" ? t.yesBtn : "bg-white text-gray-400 border-gray-200"}`}
+        >
+          YES ✓
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange("no")}
+          className={`h-6 rounded-md border text-[10px] font-bold transition-all ${value === "no" ? "bg-gray-200 text-gray-600 border-gray-300" : "bg-white text-gray-400 border-gray-200"}`}
+        >
+          NO ✕
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const DISCOUNT_RATES = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
+
+function DualCalculators({
+  debtAmount,
+  freezeDate,
+}: {
+  debtAmount: number;
+  freezeDate: string;
+}) {
+  const [rate, setRate] = useState<number>(25);
+  const [extraApplied, setExtraApplied] = useState<boolean>(false);
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+  const days = useMemo(() => {
+    if (!freezeDate) return 0;
+    const fd = new Date(freezeDate);
+    if (isNaN(fd.getTime())) return 0;
+    return Math.max(0, Math.floor((today.getTime() - fd.getTime()) / (1000 * 60 * 60 * 24)));
+  }, [freezeDate, today]);
+
+  const years = days / 365;
+  const discountAmount = debtAmount * (rate / 100);
+  const settlementAmount = debtAmount - discountAmount;
+
+  const addExtra = () => {
+    if (extraApplied) return;
+    const next = Math.min(rate + 5, 80);
+    setRate(next);
+    setExtraApplied(true);
+  };
+
+  const fmt = (n: number) =>
+    n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  return (
+    <div className="grid grid-cols-2 gap-2" dir="rtl">
+      {/* حاسبة التاريخ — يمين */}
+      <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
+        <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-[#234E45] pb-1 border-b border-dashed border-[#e8e6e1]">
+          <Calendar className="size-3.5" />
+          <span>حاسبة التاريخ</span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">تاريخ التجميد</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
+              {freezeDate || "—"}
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">تاريخ اليوم (ثابت)</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
+              {todayStr}
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">عدد أيام التأخير</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#234E45]">
+              {days || "—"}
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">عدد السنوات</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#234E45]">
+              {years ? years.toFixed(2) : "—"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* حاسبة الخصم — يسار */}
+      <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
+        <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-[#7B3FE4] pb-1 border-b border-dashed border-[#e8e6e1]">
+          <Calculator className="size-3.5" />
+          <span>حاسبة الخصم</span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">المبلغ (من مبلغ المديونية)</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
+              {fmt(debtAmount)} SAR
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">نسبة الخصم %</div>
+            <Select value={String(rate)} onValueChange={(v) => { setRate(Number(v)); setExtraApplied(false); }}>
+              <SelectTrigger className="h-7 text-[10px] text-center bg-white border border-[#e8e6e1] rounded-md">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent dir="rtl">
+                {DISCOUNT_RATES.map((r) => (
+                  <SelectItem key={r} value={String(r)} className="text-[11px]">{r}%</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={addExtra}
+          disabled={extraApplied || rate >= 80}
+          className="w-full h-7 rounded-md border border-emerald-300 bg-emerald-50 text-emerald-700 text-[10px] font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-100 transition-colors"
+        >
+          + إضافة 5% خصم إضافي
+        </button>
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">مبلغ الخصم</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#E11D48]">
+              {fmt(discountAmount)} SAR
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">مبلغ التسوية</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#0E8F4F]">
+              {fmt(settlementAmount)} SAR
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
