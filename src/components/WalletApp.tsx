@@ -1238,7 +1238,7 @@ function CustomerSheet({
                 <div className="space-y-2.5 text-right font-sans" dir="rtl">
                   {/* الصف 1: رقم الحساب | نوع المنتج */}
                   <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <EditField label="رقم الحساب" icon={<CreditCard className="size-3" />}>
                         <Input
                           value={get("رقم الحساب") || ""}
@@ -1250,11 +1250,20 @@ function CustomerSheet({
                       </EditField>
                       <EditField label="نوع المنتج" icon={<Tag className="size-3" />}>
                         <Input
-                          value={get("نوع المنتج") ?? get("المنتج") ?? ""}
+                          value={String(get("نوع المنتج") ?? get("المنتج") ?? "").toUpperCase()}
                           readOnly
                           inputMode="none"
                           onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} cursor-default`}
+                          className={`${inputCls} cursor-default text-center font-bold`}
+                        />
+                      </EditField>
+                      <EditField label="NOTE" icon={<FileText className="size-3" />}>
+                        <Input
+                          value={String(get("NOTE") ?? get("Note") ?? get("note") ?? get("ملاحظة") ?? "")}
+                          readOnly
+                          inputMode="none"
+                          onFocus={(e) => e.currentTarget.blur()}
+                          className={`${inputCls} cursor-default text-center`}
                         />
                       </EditField>
                     </div>
