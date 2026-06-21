@@ -665,6 +665,23 @@ function WalletViewPage() {
 
                         const display = displayValue(row, c.key, st, c.type);
 
+                        if (c.key === "رقم الحساب" && view === "my-wallet") {
+                          return (
+                            <TableCell key={c.key} dir="rtl" className={baseCls}>
+                              <button
+                                type="button"
+                                className="text-primary hover:underline font-medium cursor-pointer bg-transparent border-0 p-0"
+                                onClick={() => {
+                                  sessionStorage.setItem("open-customer-key", key);
+                                  navigate({ to: "/" });
+                                }}
+                              >
+                                {display}
+                              </button>
+                            </TableCell>
+                          );
+                        }
+
                         return (
                           <TableCell key={c.key} dir="rtl" className={baseCls}>
                             {display}
