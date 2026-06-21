@@ -1417,49 +1417,46 @@ function CustomerSheet({
                       />
                     </EditField>
                     <EditField label="تاريخ التجميد" icon={<Snowflake className="size-3" />}>
-                      <Input
-                        value={defaultDate}
-                        readOnly
-                        inputMode="none"
-                        onFocus={(ev) => ev.currentTarget.blur()}
-                        title="محسوب تلقائياً من JWO_DT − 3 أشهر"
-                        className={`${inputCls} cursor-default text-center`}
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className={`${inputCls} text-center w-full flex items-center justify-center gap-1 px-2`}
+                          >
+                            <span className="tabular-nums">{defaultDate || "—"}</span>
+                            <Calendar className="size-3 text-[#234E45]" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="center">
+                          <CalendarPicker
+                            mode="single"
+                            selected={defaultDate ? new Date(defaultDate) : undefined}
+                            onSelect={(d) => {
+                              if (!d) return;
+                              const yyyy = d.getFullYear();
+                              const mm = String(d.getMonth() + 1).padStart(2, "0");
+                              const dd = String(d.getDate()).padStart(2, "0");
+                              setEdit({ "تاريخ التجميد": `${yyyy}-${mm}-${dd}` });
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </EditField>
                   </div>
 
-                  {/* الصف: سنوات التعثر | نسبة الخصم | مبلغ التسوية — يظهر فقط عند تحديد تاريخ التجميد */}
-                  {settlement && (
-                    <div className="grid grid-cols-3 gap-2">
-                      <EditField label="سنوات التعثر" icon={<Clock className="size-3" />}>
-                        <Input
-                          value={settlement.years.toFixed(1)}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} tabular-nums cursor-default text-center`}
-                        />
-                      </EditField>
-                      <EditField label="نسبة الخصم" icon={<Coins className="size-3" />}>
-                        <Input
-                          value={`${(settlement.rate * 100).toFixed(0)}%`}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} tabular-nums cursor-default text-center text-emerald-600 font-bold`}
-                        />
-                      </EditField>
-                      <EditField label="مبلغ التسوية" icon={<Wallet className="size-3" />}>
-                        <Input
-                          value={formatCurrency(settlement.settle)}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(e) => e.currentTarget.blur()}
-                          className={`${inputCls} tabular-nums cursor-default text-center font-bold`}
-                        />
-                      </EditField>
-                    </div>
-                  )}
+                  {/* صف الحاسبات: حاسبة التاريخ (يمين) | حاسبة الخصم (يسار) */}
+                  <DualCalculators
+                    debtAmount={Number(c["مبلغ المديونية"] ?? c["المبلغ"]) || 0}
+                    freezeDate={defaultDate}
+                  />
+
+                  {/* ملاحظة أسفل الحاسبات */}
+                  <div className="flex items-start gap-1.5 text-[10px] text-[#7A6A4F] bg-[#FFFBEB] border border-[#FDE68A] rounded-lg p-2">
+                    <AlertTriangle className="size-3 mt-0.5 text-[#D97706] shrink-0" />
+                    <p className="leading-snug text-right">
+                      مبلغ التسوية النهائي الصادر هو بشكل تقريبي، يرجى التأكد من تاريخ التجميد المدون في شاشة NBL وبسياسة الخصم المتبعة للشهر الحالي.
+                    </p>
+                  </div>
 
                   {/* الصف: رقم القضية | اسم المحكمة | أرصدة محجوزة */}
                   <div className="grid grid-cols-3 gap-2">
