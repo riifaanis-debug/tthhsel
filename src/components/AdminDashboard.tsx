@@ -39,6 +39,7 @@ import { canonicalToCustomer } from "@/lib/canonical-to-customer";
 import { clearSession, DISABLED_KEY } from "@/components/LoginGate";
 import { useServerFn } from "@tanstack/react-start";
 import { getCollectorsStats } from "@/lib/collectors-stats.functions";
+import { clearWalletCustomers } from "@/lib/wallet-write.functions";
 
 type Collector = { supervisor: string; collector: string; employeeId: string };
 const BASE_COLLECTORS = collectors as Collector[];
@@ -128,6 +129,7 @@ export default function AdminDashboard() {
 }
 
 function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
+  const clearWalletFn = useServerFn(clearWalletCustomers);
   const pendingCount = useMemo(() => {
     try {
       const all = JSON.parse(localStorage.getItem(REQ_KEY) || "[]") as ThirdPartyReq[];
@@ -187,12 +189,26 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
   const clearCache = async () => {
     if (
       !confirm(
-        "سيتم تفريغ ذاكرة الجهاز المؤقتة (التخزين المحلي والكاش) مع الاحتفاظ بالجلسة الحالية. هل تريد المتابعة؟",
+        "سيتم تصفير جميع بيانات المحفظة وحسابات وسداد ووعود جميع المحصلين، وتفريغ ذاكرة الجهاز المؤقتة. هل تريد المتابعة؟",
       )
     )
       return;
     try {
       const sessionRaw = localStorage.getItem("wallet:session");
+      let employeeId = "";
+      try {
+        employeeId = sessionRaw ? (JSON.parse(sessionRaw)?.employeeId || "") : "";
+      } catch {}
+
+      // 1) Wipe DB tables (customers, customer_states, customer_notes, contact_logs)
+      try {
+        await clearWalletFn({ data: { employeeId } });
+      } catch (e: any) {
+        toast.error("تعذر تصفير بيانات قاعدة البيانات: " + (e?.message || ""));
+        return;
+      }
+
+      // 2) Clear local cache (keep session)
       localStorage.clear();
       if (sessionRaw) localStorage.setItem("wallet:session", sessionRaw);
       sessionStorage.clear();
@@ -213,10 +229,10 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
           ),
         );
       }
-      toast.success("تم تفريغ الذاكرة، سيتم إعادة تحميل الصفحة");
-      setTimeout(() => window.location.reload(), 600);
+      toast.success("تم تصفير جميع بيانات المحصلين وتفريغ الذاكرة");
+      setTimeout(() => window.location.reload(), 800);
     } catch (e: any) {
-      toast.error("تعذر تفريغ الذاكرة: " + (e?.message || ""));
+      toast.error("تعذر التصفير: " + (e?.message || ""));
     }
   };
 
@@ -254,7 +270,7 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-base text-destructive">تصفير وتفريغ الذاكرة</div>
           <div className="text-xs text-muted-foreground mt-0.5">
-            تنظيف ذاكرة الجهاز المؤقتة (Cache / LocalStorage) مع الاحتفاظ بالجلسة
+            مسح جميع بيانات المحصلين (الحسابات، السداد، الوعود) وتنظيف الذاكرة
           </div>
         </div>
       </button>
