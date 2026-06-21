@@ -1166,8 +1166,7 @@ function CustomerSheet({
                   return e[k] ?? state?.paymentAmount ?? c[k] ?? null;
                 }
                 if (k === "تاريخ التجميد") {
-                  // Always computed from JWO_DT - 3 months; ignore edits/state.
-                  return freezeFromJwo(readJwo(c)) || null;
+                  return defaultDate || null;
                 }
 
                 return (e[k] ?? c[k]) as any;
