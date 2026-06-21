@@ -189,12 +189,26 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
   const clearCache = async () => {
     if (
       !confirm(
-        "سيتم تفريغ ذاكرة الجهاز المؤقتة (التخزين المحلي والكاش) مع الاحتفاظ بالجلسة الحالية. هل تريد المتابعة؟",
+        "سيتم تصفير جميع بيانات المحفظة وحسابات وسداد ووعود جميع المحصلين، وتفريغ ذاكرة الجهاز المؤقتة. هل تريد المتابعة؟",
       )
     )
       return;
     try {
       const sessionRaw = localStorage.getItem("wallet:session");
+      let employeeId = "";
+      try {
+        employeeId = sessionRaw ? (JSON.parse(sessionRaw)?.employeeId || "") : "";
+      } catch {}
+
+      // 1) Wipe DB tables (customers, customer_states, customer_notes, contact_logs)
+      try {
+        await clearWalletFn({ data: { employeeId } });
+      } catch (e: any) {
+        toast.error("تعذر تصفير بيانات قاعدة البيانات: " + (e?.message || ""));
+        return;
+      }
+
+      // 2) Clear local cache (keep session)
       localStorage.clear();
       if (sessionRaw) localStorage.setItem("wallet:session", sessionRaw);
       sessionStorage.clear();
@@ -215,10 +229,10 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
           ),
         );
       }
-      toast.success("تم تفريغ الذاكرة، سيتم إعادة تحميل الصفحة");
-      setTimeout(() => window.location.reload(), 600);
+      toast.success("تم تصفير جميع بيانات المحصلين وتفريغ الذاكرة");
+      setTimeout(() => window.location.reload(), 800);
     } catch (e: any) {
-      toast.error("تعذر تفريغ الذاكرة: " + (e?.message || ""));
+      toast.error("تعذر التصفير: " + (e?.message || ""));
     }
   };
 
