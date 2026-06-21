@@ -547,17 +547,6 @@ export default function WalletApp() {
                 <span>المحفظة كاملة</span>
               </Link>
             </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full justify-start gap-2 h-12"
-              onClick={() => setMenuOpen(false)}
-            >
-              <Link to="/wallet-view" search={{ view: "my-wallet" }}>
-                <Wallet className="size-5" />
-                <span>محفظتي</span>
-              </Link>
-            </Button>
             {/* رفع الملفات حصراً من لوحة الإدارة — تم إخفاؤها للمحصل */}
           </div>
         </SheetContent>
@@ -585,7 +574,7 @@ export default function WalletApp() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-[1.7fr_0.72fr_0.72fr] gap-1.5">
             <div className="rounded-md border bg-muted/30 px-2 py-2 flex flex-col items-center gap-0.5">
               <div className="text-[11px] font-bold text-[#f59e0b]">PF</div>
               <div className="text-sm font-extrabold tabular-nums">
@@ -928,9 +917,10 @@ function CustomerRow({
               <span className="text-xs text-muted-foreground font-medium">SAR</span>
             </span>
             {c["عميل متوفي"] ? (
-              <Badge variant="destructive">متوفى</Badge>
-            ) : c["عميل رواتب"] ? (
-              <Badge variant="secondary">رواتب</Badge>
+              <Badge variant="destructive" className="bg-red-600 text-white">عميل متوفي</Badge>
+            ) : null}
+            {c["عميل رواتب"] ? (
+              <Badge className="bg-sky-500 text-white border-0">عميل رواتب</Badge>
             ) : null}
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -1060,15 +1050,15 @@ function CustomerSheet({
       <Sheet open={!!customer} onOpenChange={(o) => !o && requestClose()}>
         <SheetContent
           side="left"
-          className="w-full sm:max-w-md overflow-y-auto [&>button.absolute]:left-4 [&>button.absolute]:right-auto [&>button.absolute]:top-3 p-2.5 sm:p-4 pt-12 sm:pt-12 bg-[#FBFAF7] border-[#e8e6e1]"
+          className="w-full sm:max-w-md overflow-y-auto [&>button.absolute]:left-3 [&>button.absolute]:right-auto [&>button.absolute]:top-3 p-2 sm:p-3 pt-12 sm:pt-12 bg-[#FBFAF7] border-[#e8e6e1]"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>{c["اسم العميل"]}</SheetTitle>
           </SheetHeader>
 
-          <div className="mt-2 space-y-3" dir="rtl">
+          <div className="mt-2 space-y-2" dir="rtl">
             {/* Header: name (right) + debt amount (left) — pill cards with label + icon */}
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-[1.45fr_0.85fr] gap-2">
               {/* Name card (right in RTL) */}
               <div className="rounded-2xl bg-white px-3 pt-2 pb-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.05)] border border-[#ececec]">
                 <div
@@ -1080,7 +1070,7 @@ function CustomerSheet({
                 </div>
                 <div
                   dir="rtl"
-                  className="h-7 rounded-xl bg-white shadow-inner border border-[#ececec] px-2 flex items-center justify-start text-right text-[11px] text-[#3a3a3a] font-semibold truncate"
+                  className="h-7 rounded-xl bg-white shadow-inner border border-[#ececec] px-2 flex items-center justify-start text-right text-[10.5px] text-[#3a3a3a] font-semibold overflow-hidden whitespace-nowrap"
                 >
                   {c["اسم العميل"] || ""}
                 </div>
@@ -1106,7 +1096,7 @@ function CustomerSheet({
             </div>
 
             {/* Four action buttons (RTL right→left): WhatsApp | Call | 3rd party | Settlement Card */}
-            <div dir="rtl" className="grid grid-cols-4 items-center gap-2 sm:gap-3 py-2">
+            <div dir="rtl" className="grid grid-cols-4 items-center gap-1.5 sm:gap-2 py-1">
               <button
                 type="button"
                 onClick={onWhats}
@@ -1245,15 +1235,16 @@ function CustomerSheet({
                 "") as string;
               const isBankSeizedOn = isOn("المبلغ المحجوز لصالح البنك");
               const inputCls =
-                "h-8 text-[11px] text-center bg-white border border-[#e8e6e1] rounded-md focus-visible:ring-1 focus-visible:ring-[#234E45]/30 focus-visible:ring-offset-0";
+                "h-8 text-[10.5px] text-center bg-white border border-[#e8e6e1] rounded-md focus-visible:ring-1 focus-visible:ring-[#234E45]/30 focus-visible:ring-offset-0";
               return (
-                <div className="space-y-2.5 text-right font-sans" dir="rtl">
+                <div className="space-y-2 text-right font-sans" dir="rtl">
                   {/* الصف 1: رقم الحساب | نوع المنتج */}
-                  <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
+                  <div className="rounded-xl border border-[#e8e6e1] bg-white p-1.5 space-y-1.5">
                     <div className="grid grid-cols-3 gap-2">
                       <EditField label="رقم الحساب" icon={<CreditCard className="size-3" />}>
                         <Input
                           value={get("رقم الحساب") || ""}
+                          dir="ltr"
                           readOnly
                           inputMode="none"
                           onFocus={(e) => e.currentTarget.blur()}
@@ -1280,7 +1271,7 @@ function CustomerSheet({
                       </EditField>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-[1.18fr_0.82fr_1.25fr] gap-1.5">
                       <EditField label="الأكشن" icon={<Target className="size-3" />}>
                         <Select value={currentAction} onValueChange={(v) => setEdit({ الاكشن: v })}>
                           <SelectTrigger
@@ -1321,6 +1312,7 @@ function CustomerSheet({
                       <EditField label="رقم الجوال" icon={<Smartphone className="size-3" />}>
                         <Input
                           value={get("رقم الجوال") || ""}
+                          dir="ltr"
                           readOnly
                           inputMode="none"
                           onFocus={(e) => e.currentTarget.blur()}
@@ -1539,7 +1531,7 @@ function CustomerSheet({
                         className="w-full h-full object-contain"
                       />
                     </button>
-                    <EditField label="الإجراء: الحجز التنفيذي - الرقم المرجعي" icon={<Bookmark className="size-3" />}>
+                    <EditField label="الإجراء: الحجز التنفيذي" icon={<Bookmark className="size-3" />}>
                       <Input
                         value={get("رقم مرجع الحجز التنفيذي") ?? get("مرجع الحجز التنفيذي") ?? ""}
                         onChange={(ev) => {
@@ -1554,7 +1546,7 @@ function CustomerSheet({
                         className={`${inputCls} tabular-nums`}
                       />
                     </EditField>
-                    <EditField label="أرصدة محجوزة لصالح البنك" icon={<Coins className="size-3" />}>
+                    <EditField label="أرصدة محجوزة" icon={<Coins className="size-3" />}>
                       <Input
                         value={get("أرصدة محجوزة لصالح البنك") ?? get("ارصدة محجوزه لصالح البنك") ?? ""}
                         onChange={(ev) => {
@@ -1565,7 +1557,7 @@ function CustomerSheet({
                           });
                         }}
                         inputMode="decimal"
-                        placeholder="0.00"
+                        placeholder="أرصدة محجوزة لصالح البنك"
                         className={`${inputCls} tabular-nums`}
                       />
                     </EditField>
@@ -1915,11 +1907,11 @@ function EditField({
 }) {
   return (
     <div
-      className={`min-w-0 rounded-xl bg-white border border-[#e8e6e1] p-1.5 space-y-1 ${className || ""}`}
+      className={`min-w-0 rounded-xl bg-white border border-[#e8e6e1] p-1 space-y-0.5 ${className || ""}`}
     >
       <div
         dir="rtl"
-        className="flex flex-row items-center justify-start gap-1 text-[10px] text-[#234E45] font-semibold leading-tight text-right"
+        className="flex flex-row items-center justify-start gap-1 text-[9.5px] text-[#234E45] font-semibold leading-tight text-right"
       >
         {icon}
         <span className="truncate">{label}</span>
@@ -2056,9 +2048,9 @@ function DualCalculators({
     n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <div className="grid grid-cols-2 gap-2" dir="rtl">
+    <div className="grid grid-cols-2 gap-1.5" dir="rtl">
       {/* حاسبة التاريخ — يمين */}
-      <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
+      <div className="rounded-xl border border-[#e8e6e1] bg-white p-1.5 space-y-1.5">
         <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-[#234E45] pb-1 border-b border-dashed border-[#e8e6e1]">
           <Calendar className="size-3.5" />
           <span>حاسبة التاريخ</span>
@@ -2092,22 +2084,22 @@ function DualCalculators({
       </div>
 
       {/* حاسبة الخصم — يسار */}
-      <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
+      <div className="rounded-xl border border-[#e8e6e1] bg-white p-1.5 space-y-1.5">
         <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-[#7B3FE4] pb-1 border-b border-dashed border-[#e8e6e1]">
           <Calculator className="size-3.5" />
           <span>حاسبة الخصم</span>
         </div>
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-[1.45fr_0.65fr] gap-1.5">
           <div className="space-y-0.5">
-            <div className="text-[9px] text-[#5a6b63] text-right">المبلغ</div>
-            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
+            <div className="text-[8.5px] text-[#5a6b63] text-right">المبلغ</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[9.5px] tabular-nums flex items-center justify-center font-semibold whitespace-nowrap leading-none">
               {fmt(debtAmount)} SAR
             </div>
           </div>
           <div className="space-y-0.5">
-            <div className="text-[9px] text-[#5a6b63] text-right">نسبة الخصم %</div>
+            <div className="text-[8.5px] text-[#5a6b63] text-right">نسبة الخصم %</div>
             <Select value={String(rate)} onValueChange={(v) => { setRate(Number(v)); setExtraApplied(false); }}>
-              <SelectTrigger className="h-7 text-[10px] text-center bg-white border border-[#e8e6e1] rounded-md">
+              <SelectTrigger className="h-7 text-[9.5px] text-center bg-white border border-[#e8e6e1] rounded-md px-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent dir="rtl">
@@ -2122,20 +2114,20 @@ function DualCalculators({
           type="button"
           onClick={addExtra}
           disabled={extraApplied || rate >= 80}
-          className="w-full h-7 rounded-md border border-emerald-300 bg-emerald-50 text-emerald-700 text-[10px] font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-100 transition-colors"
+          className="w-full h-6 rounded-md border border-emerald-300 bg-emerald-50 text-emerald-700 text-[9px] font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-100 transition-colors"
         >
           + إضافة 5% خصم إضافي
         </button>
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="space-y-1.5">
           <div className="space-y-0.5">
-            <div className="text-[9px] text-[#5a6b63] text-right">مبلغ الخصم</div>
-            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#E11D48]">
+            <div className="text-[8.5px] text-[#5a6b63] text-right">مبلغ الخصم</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[9.5px] tabular-nums flex items-center justify-center font-bold text-[#E11D48] whitespace-nowrap leading-none">
               {fmt(discountAmount)} SAR
             </div>
           </div>
           <div className="space-y-0.5">
-            <div className="text-[9px] text-[#5a6b63] text-right">مبلغ التسوية</div>
-            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#0E8F4F]">
+            <div className="text-[8.5px] text-[#5a6b63] text-right">مبلغ التسوية</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[9.5px] tabular-nums flex items-center justify-center font-bold text-[#0E8F4F] whitespace-nowrap leading-none">
               {fmt(settlementAmount)} SAR
             </div>
           </div>
