@@ -215,11 +215,52 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_backups: {
+        Row: {
+          account_count: number
+          contact_logs_data: Json
+          created_at: string
+          created_by: string | null
+          customer_notes_data: Json
+          customer_states_data: Json
+          customers_data: Json
+          id: string
+          total_amount: number
+        }
+        Insert: {
+          account_count?: number
+          contact_logs_data?: Json
+          created_at?: string
+          created_by?: string | null
+          customer_notes_data?: Json
+          customer_states_data?: Json
+          customers_data?: Json
+          id?: string
+          total_amount?: number
+        }
+        Update: {
+          account_count?: number
+          contact_logs_data?: Json
+          created_at?: string
+          created_by?: string | null
+          customer_notes_data?: Json
+          customer_states_data?: Json
+          customers_data?: Json
+          id?: string
+          total_amount?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      create_wallet_backup: { Args: { _created_by: string }; Returns: string }
+      restore_wallet_backup: {
+        Args: { _backup_id: string }
+        Returns: undefined
+      }
       truncate_wallet_tables: { Args: never; Returns: undefined }
     }
     Enums: {

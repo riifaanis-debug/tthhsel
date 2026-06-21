@@ -22,26 +22,31 @@ const RowSchema = z.object({
   file_month: z.string().nullable().optional(),
 });
 
-const ClearInput = z.object({ employeeId: z.string() });
+const ClearInput = z.object({
+  employeeId: z.string(),
+  createdBy: z.string().nullable().optional(),
+  skipBackup: z.boolean().optional(),
+});
 
 export const clearWalletCustomers = createServerFn({ method: "POST" })
   .inputValidator((input) => ClearInput.parse(input))
   .handler(async ({ data }) => {
     if (data.employeeId !== ADMIN_EMPLOYEE_ID) throw new Error("Unauthorized");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    console.log("[clearWalletCustomers] Calling truncate_wallet_tables RPC...");
-    try {
-      const { error } = await supabaseAdmin.rpc("truncate_wallet_tables");
-      if (error) {
-        console.error("[clearWalletCustomers] RPC error:", error);
-        throw new Error(error.message);
+    let backupId: string | null = null;
+    if (!data.skipBackup) {
+      const { data: bid, error: bErr } = await supabaseAdmin.rpc("create_wallet_backup", {
+        _created_by: data.createdBy ?? data.employeeId ?? null,
+      });
+      if (bErr) {
+        console.error("[clearWalletCustomers] backup error:", bErr);
+        throw new Error("تعذر إنشاء النسخة الاحتياطية: " + bErr.message);
       }
-      console.log("[clearWalletCustomers] All cleared via TRUNCATE.");
-      return { ok: true };
-    } catch (err: any) {
-      console.error("[clearWalletCustomers] Exception:", err);
-      throw err;
+      backupId = (bid as unknown as string) || null;
     }
+    const { error } = await supabaseAdmin.rpc("truncate_wallet_tables");
+    if (error) throw new Error(error.message);
+    return { ok: true, backupId };
   });
 
 
