@@ -1514,21 +1514,8 @@ function CustomerSheet({
                     </EditField>
                   </div>
 
-                  {/* الصف: رقم مرجع الحجز | محجوز لصالح البنك */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <EditField label="رقم مرجع الحجز" icon={<Bookmark className="size-3" />}>
-                      <Input
-                        value={get("رقم مرجع الحجز التنفيذي") ?? get("مرجع الحجز التنفيذي") ?? ""}
-                        onChange={(ev) => {
-                          const val = ev.target.value;
-                          setEdit({
-                            "رقم مرجع الحجز التنفيذي": val,
-                            "مرجع الحجز التنفيذي": val,
-                          });
-                        }}
-                        className={inputCls}
-                      />
-                    </EditField>
+                  {/* الصف: محجوز لصالح البنك | الإجراء (رقم مرجع الحجز) | بطاقة ناجز */}
+                  <div className="grid grid-cols-3 gap-2">
                     <StatusPill
                       label="محجوز لصالح البنك"
                       icon={<Coins className="size-3.5 text-[#234E45]" />}
@@ -1537,6 +1524,31 @@ function CustomerSheet({
                       active={isBankSeizedOn}
                       onClick={() => toggleYesNo({}, "المبلغ المحجوز لصالح البنك")}
                     />
+                    <EditField label="الإجراء: الحجز التنفيذي - الرقم المرجعي" icon={<Bookmark className="size-3" />}>
+                      <Input
+                        value={get("رقم مرجع الحجز التنفيذي") ?? get("مرجع الحجز التنفيذي") ?? ""}
+                        onChange={(ev) => {
+                          const val = ev.target.value.replace(/[^0-9]/g, "");
+                          setEdit({
+                            "رقم مرجع الحجز التنفيذي": val,
+                            "مرجع الحجز التنفيذي": val,
+                          });
+                        }}
+                        inputMode="numeric"
+                        placeholder="ادخل الرقم المرجعي"
+                        className={`${inputCls} tabular-nums`}
+                      />
+                    </EditField>
+                    <button
+                      type="button"
+                      onClick={() => window.open("https://najiz.sa/applications/iexecution/Inquiry", "_blank")}
+                      className="rounded-xl bg-gradient-to-l from-[#EFE7D1] to-[#F7F3E5] border border-[#D9C792] p-2 flex items-center justify-center gap-1 hover:shadow-md transition-all"
+                    >
+                      <span className="text-[10px] font-bold text-[#7B5E1F] text-center leading-tight">
+                        التحقق من<br />طلب تنفيذ
+                      </span>
+                      <span className="text-[11px] font-extrabold text-[#A37B1A]">ناجز</span>
+                    </button>
                   </div>
 
                   {/* مبلغ السداد | نوع السداد */}
