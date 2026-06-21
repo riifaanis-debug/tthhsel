@@ -1948,3 +1948,176 @@ function StatusPill({
     </button>
   );
 }
+
+function YesNoPill({
+  label,
+  icon,
+  tone,
+  value,
+  onChange,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  tone: "green" | "red" | "purple";
+  value: "yes" | "no" | null;
+  onChange: (v: "yes" | "no") => void;
+}) {
+  const toneMap = {
+    green: { bgYes: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700", yesBtn: "bg-emerald-100 text-emerald-700 border-emerald-300", noBtn: "bg-gray-100 text-gray-500 border-gray-200" },
+    red: { bgYes: "bg-rose-50", border: "border-rose-200", text: "text-rose-700", yesBtn: "bg-rose-100 text-rose-700 border-rose-300", noBtn: "bg-gray-100 text-gray-500 border-gray-200" },
+    purple: { bgYes: "bg-violet-50", border: "border-violet-200", text: "text-violet-700", yesBtn: "bg-violet-100 text-violet-700 border-violet-300", noBtn: "bg-gray-100 text-gray-500 border-gray-200" },
+  } as const;
+  const t = toneMap[tone];
+  const cardBg = value === "yes" ? t.bgYes : "bg-white";
+  const cardOpacity = value === "no" ? "opacity-60" : "";
+  return (
+    <div className={`rounded-xl border ${t.border} ${cardBg} ${cardOpacity} p-1.5 flex flex-col gap-1.5 transition-all`}>
+      <div dir="rtl" className={`flex items-center justify-end gap-1 text-[10px] font-bold ${t.text}`}>
+        <span className="truncate">{label}</span>
+        {icon}
+      </div>
+      <div className="grid grid-cols-2 gap-1">
+        <button
+          type="button"
+          onClick={() => onChange("yes")}
+          className={`h-6 rounded-md border text-[10px] font-bold transition-all ${value === "yes" ? t.yesBtn : "bg-white text-gray-400 border-gray-200"}`}
+        >
+          YES ✓
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange("no")}
+          className={`h-6 rounded-md border text-[10px] font-bold transition-all ${value === "no" ? "bg-gray-200 text-gray-600 border-gray-300" : "bg-white text-gray-400 border-gray-200"}`}
+        >
+          NO ✕
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const DISCOUNT_RATES = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
+
+function DualCalculators({
+  debtAmount,
+  freezeDate,
+}: {
+  debtAmount: number;
+  freezeDate: string;
+}) {
+  const [rate, setRate] = useState<number>(25);
+  const [extraApplied, setExtraApplied] = useState<boolean>(false);
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+  const days = useMemo(() => {
+    if (!freezeDate) return 0;
+    const fd = new Date(freezeDate);
+    if (isNaN(fd.getTime())) return 0;
+    return Math.max(0, Math.floor((today.getTime() - fd.getTime()) / (1000 * 60 * 60 * 24)));
+  }, [freezeDate, today]);
+
+  const years = days / 365;
+  const discountAmount = debtAmount * (rate / 100);
+  const settlementAmount = debtAmount - discountAmount;
+
+  const addExtra = () => {
+    if (extraApplied) return;
+    const next = Math.min(rate + 5, 80);
+    setRate(next);
+    setExtraApplied(true);
+  };
+
+  const fmt = (n: number) =>
+    n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  return (
+    <div className="grid grid-cols-2 gap-2" dir="rtl">
+      {/* حاسبة التاريخ — يمين */}
+      <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
+        <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-[#234E45] pb-1 border-b border-dashed border-[#e8e6e1]">
+          <Calendar className="size-3.5" />
+          <span>حاسبة التاريخ</span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">تاريخ التجميد</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
+              {freezeDate || "—"}
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">تاريخ اليوم (ثابت)</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
+              {todayStr}
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">عدد أيام التأخير</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#234E45]">
+              {days || "—"}
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">عدد السنوات</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#234E45]">
+              {years ? years.toFixed(2) : "—"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* حاسبة الخصم — يسار */}
+      <div className="rounded-xl border border-[#e8e6e1] bg-white p-2 space-y-2">
+        <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-[#7B3FE4] pb-1 border-b border-dashed border-[#e8e6e1]">
+          <Calculator className="size-3.5" />
+          <span>حاسبة الخصم</span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">المبلغ (من مبلغ المديونية)</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
+              {fmt(debtAmount)} SAR
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">نسبة الخصم %</div>
+            <Select value={String(rate)} onValueChange={(v) => { setRate(Number(v)); setExtraApplied(false); }}>
+              <SelectTrigger className="h-7 text-[10px] text-center bg-white border border-[#e8e6e1] rounded-md">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent dir="rtl">
+                {DISCOUNT_RATES.map((r) => (
+                  <SelectItem key={r} value={String(r)} className="text-[11px]">{r}%</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={addExtra}
+          disabled={extraApplied || rate >= 80}
+          className="w-full h-7 rounded-md border border-emerald-300 bg-emerald-50 text-emerald-700 text-[10px] font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-100 transition-colors"
+        >
+          + إضافة 5% خصم إضافي
+        </button>
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">مبلغ الخصم</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#E11D48]">
+              {fmt(discountAmount)} SAR
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-[9px] text-[#5a6b63] text-right">مبلغ التسوية</div>
+            <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-bold text-[#0E8F4F]">
+              {fmt(settlementAmount)} SAR
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
