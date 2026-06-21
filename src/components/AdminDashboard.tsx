@@ -39,6 +39,7 @@ import { canonicalToCustomer } from "@/lib/canonical-to-customer";
 import { clearSession, DISABLED_KEY } from "@/components/LoginGate";
 import { useServerFn } from "@tanstack/react-start";
 import { getCollectorsStats } from "@/lib/collectors-stats.functions";
+import { clearWalletCustomers } from "@/lib/wallet-write.functions";
 
 type Collector = { supervisor: string; collector: string; employeeId: string };
 const BASE_COLLECTORS = collectors as Collector[];
