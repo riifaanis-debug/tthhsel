@@ -109,6 +109,7 @@ import CollectorInfoCard from "@/components/CollectorInfoCard";
 import pfIcon from "@/assets/pf-icon.png.asset.json";
 import alIcon from "@/assets/al-icon.png.asset.json";
 import ccIcon from "@/assets/cc-icon.png.asset.json";
+import najizVerifyBtn from "@/assets/najiz-verify-btn.png.asset.json";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
