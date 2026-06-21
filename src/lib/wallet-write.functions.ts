@@ -32,23 +32,15 @@ export const clearWalletCustomers = createServerFn({ method: "POST" })
   .inputValidator((input) => ClearInput.parse(input))
   .handler(async ({ data }) => {
     if (data.employeeId !== ADMIN_EMPLOYEE_ID) throw new Error("Unauthorized");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let backupId: string | null = null;
-    if (!data.skipBackup) {
-      const { data: bid, error: bErr } = await supabaseAdmin.rpc("create_wallet_backup", {
-        _created_by: data.createdBy ?? data.employeeId ?? null,
-      });
-      if (bErr) {
-        console.error("[clearWalletCustomers] backup error:", bErr);
-        throw new Error("تعذر إنشاء النسخة الاحتياطية: " + bErr.message);
-      }
-      backupId = (bid as unknown as string) || null;
-    }
-    const { error } = await supabaseAdmin.rpc("truncate_wallet_tables");
-    if (error) throw new Error(error.message);
-    return { ok: true, backupId };
-  });
 
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { error } = await supabaseAdmin.rpc("truncate_wallet_tables");
+
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  });
 
 const AppendInput = z.object({
   employeeId: z.string(),
@@ -66,7 +58,9 @@ export const appendWalletCustomers = createServerFn({ method: "POST" })
       for (let i = 0; i < data.rows.length; i += CHUNK) {
         const slice = data.rows.slice(i, i + CHUNK);
         console.log(
-          `[appendWalletCustomers] Inserting chunk ${Math.floor(i / CHUNK) + 1}/${Math.ceil(data.rows.length / CHUNK)} (${slice.length} rows)...`,
+          `[appendWalletCustomers] Inserting chunk ${Math.floor(i / CHUNK) + 1}/${Math.ceil(
+            data.rows.length / CHUNK,
+          )} (${slice.length} rows)...`,
         );
         const { error } = await supabaseAdmin.from("customers").insert(slice as any);
         if (error) {
