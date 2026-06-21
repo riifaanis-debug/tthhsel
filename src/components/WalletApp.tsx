@@ -1002,7 +1002,9 @@ function CustomerSheet({
 
   // حساب التسوية (يجب أن تُستدعى الـHooks قبل أي return مبكر)
   // تاريخ التجميد / التعثر = JWO_DT - 3 months (computed, never manual).
-  const defaultDate: string = freezeFromJwo(readJwo(customer)) || "";
+  const computedFreeze: string = freezeFromJwo(readJwo(customer)) || "";
+  const freezeOverride = (state?.edits as any)?.["تاريخ التجميد"] as string | undefined;
+  const defaultDate: string = (freezeOverride && String(freezeOverride)) || computedFreeze;
 
   const productRaw = String(customer?.["المنتج"] || "").toUpperCase();
   const product: ProductType = productRaw.includes("AL")
