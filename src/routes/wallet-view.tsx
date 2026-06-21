@@ -253,6 +253,7 @@ function WalletViewPage() {
   const readOnly = view === "wallet";
   const loadFn = useServerFn(getWalletCustomers);
   const { states, update } = useCustomerStates();
+  const navigate = useNavigate();
 
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
