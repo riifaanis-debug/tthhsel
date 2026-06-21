@@ -1318,61 +1318,81 @@ function CustomerSheet({
                     </div>
                   </div>
 
-                  {/* صف الشارات: تقييم أعمال | عميل متوفي | عميل رواتب */}
+                  {/* صف الشارات: تقييم أعمال | عميل متوفي | عميل رواتب — YES/NO */}
                   <div className="grid grid-cols-3 gap-2">
-                    <StatusPill
+                    <YesNoPill
                       label="تقييم أعمال"
                       icon={<BarChart3 className="size-3.5 text-[#7B3FE4]" />}
-                      bg="bg-[#F5F0FF]"
-                      active={isOn("تقييم أعمال")}
-                      onClick={() => {
-                        const next = isOn("تقييم أعمال") ? "لا" : "نعم";
-                        setEdit({ "تقييم أعمال": next, "تقييم الأعمال": next });
-                      }}
+                      tone="purple"
+                      value={isOn("تقييم أعمال") ? "yes" : (get("تقييم أعمال") || get("تقييم الأعمال")) ? "no" : null}
+                      onChange={(v) => setEdit({ "تقييم أعمال": v === "yes" ? "نعم" : "لا", "تقييم الأعمال": v === "yes" ? "نعم" : "لا" })}
                     />
-                    <StatusPill
+                    <YesNoPill
                       label="عميل متوفي"
                       icon={<UserX className="size-3.5 text-[#E11D48]" />}
-                      bg="bg-[#FFF1F2]"
-                      active={isOn("عميل متوفي")}
-                      onClick={() => toggleYesNo({}, "عميل متوفي")}
+                      tone="red"
+                      value={isOn("عميل متوفي") ? "yes" : get("عميل متوفي") ? "no" : null}
+                      onChange={(v) => setEdit({ "عميل متوفي": v === "yes" ? "نعم" : "لا" })}
                     />
-                    <StatusPill
+                    <YesNoPill
                       label="عميل رواتب"
-                      icon={<UsersRound className="size-3.5 text-[#234E45]" />}
-                      bg="bg-white"
-                      active={isOn("عميل رواتب")}
-                      onClick={() => toggleYesNo({}, "عميل رواتب")}
+                      icon={<UsersRound className="size-3.5 text-[#0E8F4F]" />}
+                      tone="green"
+                      value={isOn("عميل رواتب") ? "yes" : get("عميل رواتب") ? "no" : null}
+                      onChange={(v) => setEdit({ "عميل رواتب": v === "yes" ? "نعم" : "لا" })}
                     />
                   </div>
 
-                  {/* رقم طلب سيبل + نوع الطلب (للعرض فقط) */}
+                  {/* رقم طلب سيبل + نوع الطلب (قابلين للتعديل) */}
                   <div className="rounded-xl border border-[#e8e6e1] bg-white p-2">
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="relative">
+                      <EditField label="رقم طلب سيبل" icon={<FileText className="size-3" />}>
                         <Input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           value={sibylVal}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(ev) => ev.currentTarget.blur()}
-                          className={`${inputCls} cursor-default pr-20`}
+                          onChange={(ev) => {
+                            const val = ev.target.value.replace(/[^0-9]/g, "");
+                            setEdit({ "رقم طلب سيبل": val, "رقم طلب سبيل": val });
+                          }}
+                          className={`${inputCls} tabular-nums`}
                         />
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#234E45] font-semibold flex items-center gap-1 whitespace-nowrap pointer-events-none">
-                          <FileText className="size-3" /> رقم طلب سيبل
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-[11px] text-[#234E45] font-semibold flex items-center gap-1 whitespace-nowrap">
-                          <FileText className="size-3.5" /> نوع الطلب
-                        </div>
-                        <Input
-                          value={requestDisplay}
-                          readOnly
-                          inputMode="none"
-                          onFocus={(ev) => ev.currentTarget.blur()}
-                          className={`${inputCls} flex-1 cursor-default ${requestToneCls}`}
-                        />
-                      </div>
+                      </EditField>
+                      <EditField label="نوع الطلب" icon={<FileText className="size-3" />}>
+                        <Select
+                          value={
+                            isOn("طلب اعفاء") || hasExemptionFromBase
+                              ? "إعفاء"
+                              : isOn("طلب جدولة") || hasRescheduleFromBase
+                                ? "جدولة"
+                                : ""
+                          }
+                          onValueChange={(v) => {
+                            if (v === "إعفاء") {
+                              setEdit({
+                                "نوع الطلب": "إعفاء متوفين",
+                                "طلب اعفاء": "نعم",
+                                "طلب جدولة": "لا",
+                              });
+                            } else {
+                              setEdit({
+                                "نوع الطلب": "إعادة جدولة",
+                                "طلب اعفاء": "لا",
+                                "طلب جدولة": "نعم",
+                              });
+                            }
+                          }}
+                        >
+                          <SelectTrigger className={`${inputCls} ${requestToneCls}`}>
+                            <SelectValue placeholder="اختر نوع الطلب" />
+                          </SelectTrigger>
+                          <SelectContent dir="rtl">
+                            <SelectItem value="إعفاء">طلب إعفاء</SelectItem>
+                            <SelectItem value="جدولة">طلب جدولة</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </EditField>
                     </div>
                   </div>
 
