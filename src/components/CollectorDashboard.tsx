@@ -59,6 +59,7 @@ export function CollectorDashboard({
   badges,
   groupEnabled = false,
   onSelectAction,
+  onCollectedClick,
 }: {
   collected: number;
   totalAccounts: number;
@@ -75,6 +76,7 @@ export function CollectorDashboard({
   badges: { promises: number; exemptions: number; reschedules: number };
   groupEnabled?: boolean;
   onSelectAction: (key: QuickKey) => void;
+  onCollectedClick?: () => void;
 }) {
   const now = useNow();
   const eom = endOfMonth(now);
