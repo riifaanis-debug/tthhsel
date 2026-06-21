@@ -554,9 +554,100 @@
     "collector": "WASAYF AHMED O ALBARIQI",
     "employeeId": "974867"
   },
-  {
-    "supervisor": "Mohannad Kharshan Mohammed Alsharie",
-    "collector": "Yousef Kamal Mohammed Qaranbish",
-    "employeeId": "973375"
-  }
+ {
+  "supervisor": "Mohannad Kharshan Mohammed Alsharie",
+  "collector": "Yousef Kamal Mohammed Qaranbish",
+  "employeeId": "973375"
+},
+
+{
+  "supervisor": "Khuolod Ismail Ahmed Ismail",
+  "collector": "Abduallah Khalaf Hasan Saghir",
+  "employeeId": "952144"
+},
+{
+  "supervisor": "Eman Yanallah Mohammad almofareh",
+  "collector": "Faisal Aissa Asiri",
+  "employeeId": "953382"
+},
+{
+  "supervisor": "Abdulmajeed Saud Ayed Alahmadi",
+  "collector": "Mohammed Ali Al Zahrani",
+  "employeeId": "953856"
+},
+{
+  "supervisor": "Khuolod Ismail Ahmed Ismail",
+  "collector": "Abdulaziz Fahad Hamd Alhazmi Alharbi",
+  "employeeId": "972515"
+},
+{
+  "supervisor": "Abdulmajeed Saud Ayed Alahmadi",
+  "collector": "Mohammed Abdulhameed Hakeem",
+  "employeeId": "973351"
+},
+{
+  "supervisor": "Malak Ayed Saeed Almalki",
+  "collector": "Waseem Saleh Kalktawi",
+  "employeeId": "973381"
+},
+{
+  "supervisor": "Abdulmajeed Saud Ayed Alahmadi",
+  "collector": "Mohammed Saoud Saad Alqarni",
+  "employeeId": "973401"
+},
+{
+  "supervisor": "Fatma Ahmed Mohammed Bamani",
+  "collector": "Amer Abdulaziz Rawah",
+  "employeeId": "973993"
+},
+{
+  "supervisor": "Abdulmajeed Saud Ayed Alahmadi",
+  "collector": "Nehal Fayz Halawani",
+  "employeeId": "974606"
+},
+{
+  "supervisor": "Abdulmajeed Saud Ayed Alahmadi",
+  "collector": "Aeshah Mohammed Alasire",
+  "employeeId": "974613"
+},
+{
+  "supervisor": "Khuolod Ismail Ahmed Ismail",
+  "collector": "Gazal Ehab Khayat",
+  "employeeId": "974677"
+},
+{
+  "supervisor": "Eman Yanallah Mohammad almofareh",
+  "collector": "BASSAM ALSUHAYMI",
+  "employeeId": "974908"
+},
+{
+  "supervisor": "Fatma Ahmed Mohammed Bamani",
+  "collector": "MOHAMMAD TURKI AL ZAHRANI",
+  "employeeId": "974921"
+},
+{
+  "supervisor": "Malak Ayed Saeed Almalki",
+  "collector": "HISHAM IBRAHIM A ALSHEHRI",
+  "employeeId": "974963"
+},
+{
+  "supervisor": "Mohammed Sulaiman Haqawi",
+  "collector": "AMJAD MOHAMMED A ALKHURAIJI",
+  "employeeId": "974987"
+},
+{
+  "supervisor": "Mohammed Sulaiman Haqawi",
+  "collector": "Sarah Saeed Alhulayyil",
+  "employeeId": "975163"
+},
+{
+  "supervisor": "Mohammed Sulaiman Haqawi",
+  "collector": "Abdullah Faisal Alnuzhah",
+  "employeeId": "975190"
+},
+{
+  "supervisor": "Khalid Muhmas Al-Harthi",
+  "collector": "Faris Abdullah Alzahrani",
+  "employeeId": "975197"
+}
 ]
