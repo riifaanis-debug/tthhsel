@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table";
 import { getWalletCustomers } from "@/lib/wallet.functions";
 import { getSession } from "@/components/LoginGate";
-import { customerKey, formatCurrency, formatPhone } from "@/lib/wallet-types";
+import { customerKey, formatCurrency } from "@/lib/wallet-types";
 import { useCustomerStates } from "@/lib/wallet-store";
 import { freezeFromJwo, readJwo } from "@/lib/freeze-date";
 import {
@@ -220,8 +220,13 @@ function displayValue(row: any, key: string, st: any, type?: ColType): string {
   }
 
   if (type === "phone") {
-    const f = formatPhone(v as any);
-    return f === "—" ? "" : f;
+    const digits = String(v).replace(/\D/g, "");
+    let n = digits;
+    if (n.startsWith("00")) n = n.slice(2);
+    if (n.startsWith("05") && n.length === 10) n = "966" + n.slice(1);
+    else if (n.startsWith("5") && n.length === 9) n = "966" + n;
+    if (!n) return "";
+    return "+" + n;
   }
 
   return v;
@@ -404,7 +409,7 @@ function WalletViewPage() {
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-4 py-4 space-y-3">
+      <main className="max-w-[1600px] mx-auto px-2 py-3 space-y-2">
         <div className="flex items-center justify-end gap-3 flex-wrap">
           <div className="text-xs font-bold text-[#133E35]">
             عدد السجلات: {filtered.length.toLocaleString("en-US")}
@@ -422,7 +427,7 @@ function WalletViewPage() {
           />
         </div>
 
-        <div dir="ltr" className="border rounded-lg overflow-auto max-h-[calc(100vh-180px)] bg-white">
+        <div dir="ltr" className="border rounded-lg overflow-auto max-h-[calc(100vh-170px)] bg-white">
           {loading ? (
             <div dir="rtl" className="p-10 text-center text-sm text-muted-foreground">
               جاري تحميل المحفظة...
@@ -436,10 +441,10 @@ function WalletViewPage() {
               لا توجد بيانات
             </div>
           ) : (
-            <Table className="text-[11px] border-collapse">
+            <Table className="text-[10.5px] border-collapse table-fixed">
               <TableHeader className="sticky top-0 bg-secondary z-10">
                 <TableRow>
-                  <TableHead className="text-center font-bold text-[#133E35] whitespace-nowrap border border-[#d4ddd9] bg-secondary">
+                  <TableHead className="w-[38px] text-center font-bold text-[#133E35] whitespace-nowrap border border-[#d4ddd9] bg-secondary">
                     #
                   </TableHead>
 
@@ -474,25 +479,25 @@ function WalletViewPage() {
                   return (
                     <TableRow
                       key={i}
-                      className="hover:bg-muted/40"
+                      className={`${i % 2 === 0 ? "bg-white" : "bg-[#f7f8f5]"} hover:bg-accent/30`}
                       style={rowColor ? { backgroundColor: rowColor } : undefined}
                     >
-                      <TableCell className="tabular-nums text-muted-foreground border border-[#e5ebe8] text-center p-1">
-                        <div className="flex items-center justify-center gap-1">
-                          {!readOnly && (
-                            <RowColorPicker
-                              value={rowColor || null}
-                              onChange={(c) => setRowColor(key, c)}
-                            />
-                          )}
+                      <TableCell className="tabular-nums text-muted-foreground border border-[#e5ebe8] text-center p-0.5 h-7">
+                        {!readOnly ? (
+                          <RowColorPicker
+                            value={rowColor || null}
+                            label={String(i + 1)}
+                            onChange={(c) => setRowColor(key, c)}
+                          />
+                        ) : (
                           <span>{i + 1}</span>
-                        </div>
+                        )}
                       </TableCell>
 
                       {activeColumns.map((c) => {
                         const isMoney = MONEY_KEYS.has(c.key);
                         const align = isMoney ? "text-right" : "text-center";
-                        const baseCls = `whitespace-nowrap text-[#133E35] border border-[#e5ebe8] ${align}`;
+                        const baseCls = `whitespace-nowrap text-[#133E35] border border-[#e5ebe8] ${align} ${columnWidthClass(c.key)}`;
                         const eff = effectiveValue(row, c.key, st, c.type);
 
                         if (c.type === "yesno") {
@@ -572,15 +577,10 @@ function WalletViewPage() {
                             return (
                               <TableCell key={c.key} dir="rtl" className={`${baseCls} p-1`}>
                                 {eff ? (
-                                  <span
-                                    className="inline-block px-2 py-0.5 rounded text-[11px] font-extrabold border"
-                                    style={actionStyleInline}
-                                  >
+                                  <span className="font-extrabold" style={actionStyleInline ? { color: actionStyleInline.color } : undefined}>
                                     {eff}
                                   </span>
-                                ) : (
-                                  "—"
-                                )}
+                                ) : "—"}
                               </TableCell>
                             );
                           }
@@ -589,8 +589,8 @@ function WalletViewPage() {
                             <TableCell key={c.key} dir="rtl" className={`${baseCls} p-1`}>
                               <Select value={eff || undefined} onValueChange={(v) => setEdit(key, c.key, v)}>
                                 <SelectTrigger
-                                  className="h-7 text-[11px] px-2 text-right justify-between flex-row font-extrabold w-32 border-[#e5ebe8] mx-auto rounded"
-                                  style={actionStyleInline}
+                                  className="h-6 text-[10.5px] px-1 text-right justify-between flex-row font-extrabold w-full border-0 bg-transparent shadow-none mx-auto rounded-none focus:ring-0"
+                                  style={actionStyleInline ? { color: actionStyleInline.color } : undefined}
                                 >
                                   <SelectValue placeholder="—" />
                                 </SelectTrigger>
@@ -634,7 +634,7 @@ function WalletViewPage() {
                                 onBlur={(e) => {
                                   if (e.target.value !== dateVal) setEdit(key, c.key, e.target.value);
                                 }}
-                                className="h-7 text-[11px] px-2 text-center"
+                                className="h-6 text-[10.5px] px-1 text-center border-0 bg-transparent shadow-none focus-visible:ring-0"
                               />
                             </TableCell>
                           );
@@ -654,7 +654,7 @@ function WalletViewPage() {
                                   onBlur={(e) => {
                                     if (e.target.value !== eff) setEdit(key, c.key, e.target.value);
                                   }}
-                                  className={`h-7 text-[11px] px-2 ${
+                                  className={`h-6 text-[10.5px] px-1 border-0 bg-transparent shadow-none focus-visible:ring-0 ${
                                     isMoney || c.type === "editMoney" || numeric ? "text-right" : "text-center"
                                   }`}
                                 />
@@ -676,15 +676,15 @@ function WalletViewPage() {
                                   navigate({ to: "/" });
                                 }}
                               >
-                                {display}
+                                {c.key === "اسم العميل" ? shortenArabicName(display) : display}
                               </button>
                             </TableCell>
                           );
                         }
 
                         return (
-                          <TableCell key={c.key} dir="rtl" className={baseCls}>
-                            {display}
+                          <TableCell key={c.key} dir={c.type === "phone" ? "ltr" : "rtl"} className={baseCls}>
+                            {c.key === "اسم العميل" ? shortenArabicName(display) : display}
                           </TableCell>
                         );
                       })}
@@ -698,6 +698,26 @@ function WalletViewPage() {
       </main>
     </div>
   );
+}
+
+function shortenArabicName(value: string): string {
+  const parts = String(value || "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 4) return value;
+  return parts.slice(0, 4).join(" ");
+}
+
+function columnWidthClass(key: string): string {
+  switch (key) {
+    case "اسم العميل": return "w-[170px] max-w-[170px] overflow-hidden text-ellipsis";
+    case "رقم الجوال": return "w-[135px] max-w-[135px]";
+    case "رقم الحساب": return "w-[145px] max-w-[145px]";
+    case "الاكشن": return "w-[128px] max-w-[128px]";
+    case "تاريخ التجميد": return "w-[116px] max-w-[116px]";
+    case "نوع المنتج": return "w-[72px] max-w-[72px]";
+    case "NOTE": return "w-[82px] max-w-[82px]";
+    case "مبلغ المديونية": return "w-[120px] max-w-[120px]";
+    default: return "w-[110px] max-w-[110px]";
+  }
 }
 
 function ColumnHeader({
@@ -740,7 +760,7 @@ function ColumnHeader({
   const current = selected ?? new Set(uniques);
 
   return (
-    <TableHead className="text-center font-bold text-[#133E35] whitespace-nowrap border border-[#d4ddd9] bg-secondary">
+    <TableHead className={`text-center font-bold text-[#133E35] whitespace-nowrap border border-[#d4ddd9] bg-secondary ${columnWidthClass(col.key)}`}>
       <div className="flex items-center justify-center gap-1">
         <span>{col.label}</span>
 
@@ -835,9 +855,11 @@ function ColumnHeader({
 
 function RowColorPicker({
   value,
+  label,
   onChange,
 }: {
   value: string | null;
+  label: string;
   onChange: (color: string | null) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -851,14 +873,12 @@ function RowColorPicker({
   }, [parsed.hex, parsed.opacity]);
 
   const swatches = [
-    "#FEF3C7",
-    "#D1FAE5",
-    "#DBEAFE",
-    "#FECACA",
-    "#E5E7EB",
-    "#FBCFE8",
-    "#DDD6FE",
-    "#FED7AA",
+    "#FFF176", "#FFAB91", "#F8BBD0", "#D1C4E9", "#A7C7F9", "#A7E6DC",
+    "#DFF59A", "#B8E6C8", "#B2EBF2", "#FFE680", "#FFCC80", "#F7B6DD",
+    "#F3E2C7", "#E0E0E0", "#CFF5FA", "#99F0F2", "#E3F59A", "#D9A7F2",
+    "#7AD7EA", "#16BEE5", "#B7E600", "#00C853", "#00A99D", "#FFE000",
+    "#FFA000", "#FF5252", "#C94BE8", "#E6007E", "#FF8A80", "#F20522",
+    "#44628A", "#73BDAE", "#E4BE82", "#7087D9", "#C47780", "#A8643E",
   ];
 
   const apply = (h: string, op: number) => {
@@ -870,56 +890,28 @@ function RowColorPicker({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="w-3.5 h-3.5 rounded-sm border border-gray-400"
-          style={{ background: value || "white" }}
-          title="لون الصف"
-        />
+          className="w-full h-6 rounded-sm text-[10.5px] font-semibold text-[#133E35] hover:bg-primary/5"
+          title="تغيير لون الصف"
+        >
+          {label}
+        </button>
       </PopoverTrigger>
 
       <PopoverContent dir="rtl" className="w-56 p-2" align="center">
-        <div className="grid grid-cols-4 gap-1 mb-2">
+        <div className="grid grid-cols-6 gap-1">
           {swatches.map((s) => (
             <button
               key={s}
               type="button"
-              className="w-full h-7 rounded border border-gray-300"
-              style={{ background: hexToRgba(s, opacity) }}
+              className="w-full h-7 rounded-md border border-white shadow-sm"
+              style={{ background: s }}
               onClick={() => {
                 setHex(s);
-                apply(s, opacity);
+                apply(s, 0.55);
+                setOpen(false);
               }}
             />
           ))}
-        </div>
-
-        <div className="flex items-center gap-2 mb-2">
-          <input
-            type="color"
-            value={hex}
-            onChange={(e) => {
-              setHex(e.target.value);
-              apply(e.target.value, opacity);
-            }}
-            className="w-8 h-7 border rounded"
-          />
-
-          <div className="flex-1">
-            <div className="text-[10px] text-muted-foreground">
-              الشفافية: {Math.round(opacity * 100)}%
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={Math.round(opacity * 100)}
-              onChange={(e) => {
-                const op = Number(e.target.value) / 100;
-                setOpacity(op);
-                apply(hex, op);
-              }}
-              className="w-full"
-            />
-          </div>
         </div>
 
         <Button
