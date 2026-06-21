@@ -260,6 +260,15 @@ export default function WalletApp() {
     return () => window.removeEventListener("open-customer", handler as EventListener);
   }, [customers]);
 
+  useEffect(() => {
+    const key = sessionStorage.getItem("open-customer-key");
+    if (key && customers.length > 0) {
+      sessionStorage.removeItem("open-customer-key");
+      const found = customers.find((c) => customerKey(c) === key);
+      if (found) setOpenCustomer(found);
+    }
+  }, [customers]);
+
   const products = useMemo(
     () =>
       Array.from(

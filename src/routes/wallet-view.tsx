@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Filter, Search, Wallet, X } from "lucide-react";
@@ -253,6 +253,7 @@ function WalletViewPage() {
   const readOnly = view === "wallet";
   const loadFn = useServerFn(getWalletCustomers);
   const { states, update } = useCustomerStates();
+  const navigate = useNavigate();
 
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -663,6 +664,23 @@ function WalletViewPage() {
                         }
 
                         const display = displayValue(row, c.key, st, c.type);
+
+                        if (c.key === "رقم الحساب" && view === "my-wallet") {
+                          return (
+                            <TableCell key={c.key} dir="rtl" className={baseCls}>
+                              <button
+                                type="button"
+                                className="text-primary hover:underline font-medium cursor-pointer bg-transparent border-0 p-0"
+                                onClick={() => {
+                                  sessionStorage.setItem("open-customer-key", key);
+                                  navigate({ to: "/" });
+                                }}
+                              >
+                                {display}
+                              </button>
+                            </TableCell>
+                          );
+                        }
 
                         return (
                           <TableCell key={c.key} dir="rtl" className={baseCls}>
