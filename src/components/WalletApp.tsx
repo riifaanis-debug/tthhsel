@@ -1680,6 +1680,36 @@ function CustomerSheet({
                 </div>
               </div>
             ) : null}
+
+            {/* أزرار أسفل الصفحة: حفظ | إغلاق */}
+            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-dashed">
+              <Button
+                type="button"
+                onClick={() => {
+                  const trimmed = noteDraft.trim();
+                  if (trimmed) {
+                    const prev = state?.noteLog || [];
+                    onUpdate({
+                      noteLog: [...prev, { date: new Date().toISOString(), text: trimmed }],
+                    });
+                  }
+                  setNoteDraft("");
+                  setDirty(false);
+                  toast.success("تم حفظ الإجراءات");
+                }}
+                className="h-10 bg-[#0E8F4F] hover:bg-[#0a7a42] text-white font-bold rounded-xl"
+              >
+                💾 حفظ
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={requestClose}
+                className="h-10 border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 font-bold rounded-xl"
+              >
+                ✕ إغلاق
+              </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
