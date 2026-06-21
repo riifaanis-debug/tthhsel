@@ -10,7 +10,6 @@ import {
 
 import appCss from "../styles.css?url";
 
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -72,7 +71,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+      },
       { title: "التحصيل الذكي" },
       { name: "description", content: "نظام لإدارة محفظة التحصيل للديون المعدومة" },
       { name: "author", content: "Lovable" },
@@ -93,8 +96,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "https://storage.googleapis.com/gpt-engineer-file-uploads/xeHIaQckKvWQCyzyTDLyprVolHu1/social-images/social-1780998596215-006072DD-792C-425B-9505-71B3AD3FD635.webp",
       },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/ZXGs0DQqPnUdno3heOyjtMPJYtS2/social-images/social-1781854238247-006072DD-792C-425B-9505-71B3AD3FD635.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/ZXGs0DQqPnUdno3heOyjtMPJYtS2/social-images/social-1781854238247-006072DD-792C-425B-9505-71B3AD3FD635.webp" },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/ZXGs0DQqPnUdno3heOyjtMPJYtS2/social-images/social-1781854238247-006072DD-792C-425B-9505-71B3AD3FD635.webp",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/ZXGs0DQqPnUdno3heOyjtMPJYtS2/social-images/social-1781854238247-006072DD-792C-425B-9505-71B3AD3FD635.webp",
+      },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
