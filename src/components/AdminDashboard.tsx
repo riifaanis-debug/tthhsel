@@ -103,6 +103,7 @@ export default function AdminDashboard() {
               {tab === "requests" && "طلبات إرسال العملاء للطرف الثالث"}
               {tab === "collectors" && "بيانات المحصلين"}
               {tab === "permissions" && "صلاحيات المحصلين"}
+              {tab === "backups" && "النسخ الاحتياطية للمحافظ"}
             </p>
           </div>
           <Button
