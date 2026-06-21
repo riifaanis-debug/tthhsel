@@ -20,8 +20,9 @@ import {
   saveTemplates,
   getDefaultTemplateId,
   setDefaultTemplateId,
-  buildHeader,
+  applyTemplateVars,
   type WaTemplate,
+  type WaGender,
 } from "@/lib/wa-templates";
 
 export const Route = createFileRoute("/whatsapp-templates")({
