@@ -1979,7 +1979,7 @@ function YesNoPill({
   const cardOpacity = value === "no" ? "opacity-60" : "";
   return (
     <div className={`rounded-xl border ${t.border} ${cardBg} ${cardOpacity} p-1.5 flex flex-col gap-1.5 transition-all`}>
-      <div dir="rtl" className={`flex items-center justify-end gap-1 text-[10px] font-bold ${t.text}`}>
+      <div dir="rtl" className={`flex items-center justify-start gap-1 text-[10px] font-bold ${t.text}`}>
         <span className="truncate">{label}</span>
         {icon}
       </div>
@@ -2083,7 +2083,7 @@ function DualCalculators({
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           <div className="space-y-0.5">
-            <div className="text-[9px] text-[#5a6b63] text-right">المبلغ (من مبلغ المديونية)</div>
+            <div className="text-[9px] text-[#5a6b63] text-right">المبلغ</div>
             <div className="h-7 rounded-md bg-[#FAFAFA] border border-[#e8e6e1] text-[10px] tabular-nums flex items-center justify-center font-semibold">
               {fmt(debtAmount)} SAR
             </div>
