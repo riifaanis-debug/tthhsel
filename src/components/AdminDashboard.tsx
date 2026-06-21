@@ -26,6 +26,7 @@ import {
   Lock,
   Unlock,
   KeyRound,
+  ImagePlus,
 } from "lucide-react";
 import PermissionsPanel from "@/components/PermissionsPanel";
 import { toast } from "sonner";
@@ -52,6 +53,7 @@ const BASE_COLLECTORS = collectors as Collector[];
 
 const EXTRA_KEY = "wallet:collectors:extra";
 const REQ_KEY = "wallet:thirdparty:requests";
+const PHOTO_KEY = "wallet:collectors:photos";
 
 type ThirdPartyReq = {
   id: string;
@@ -969,6 +971,7 @@ function CollectorsDataPanel() {
   const [disabled, setDisabled] = useState<string[]>(loadDisabled());
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<Collector | null>(null);
+  const [collectorPhotos, setCollectorPhotos] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -991,6 +994,41 @@ function CollectorsDataPanel() {
     }, 8000);
     return () => clearInterval(id);
   }, [refresh]);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(PHOTO_KEY) || "{}");
+      setCollectorPhotos(stored && typeof stored === "object" ? stored : {});
+    } catch {
+      setCollectorPhotos({});
+    }
+  }, []);
+
+  const saveCollectorPhoto = (employeeId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = String(reader.result || "");
+      if (!image) return;
+      setCollectorPhotos((prev) => {
+        const next = { ...prev, [employeeId]: image };
+        localStorage.setItem(PHOTO_KEY, JSON.stringify(next));
+        return next;
+      });
+      toast.success("تم حفظ صورة المحصل");
+    };
+    reader.onerror = () => toast.error("تعذر قراءة الصورة");
+    reader.readAsDataURL(file);
+  };
+
+  const removeCollectorPhoto = (employeeId: string) => {
+    setCollectorPhotos((prev) => {
+      const next = { ...prev };
+      delete next[employeeId];
+      localStorage.setItem(PHOTO_KEY, JSON.stringify(next));
+      return next;
+    });
+    toast.success("تم حذف صورة المحصل");
+  };
 
   const toggleDisabled = (eid: string) => {
     const next = disabled.includes(eid) ? disabled.filter((x) => x !== eid) : [...disabled, eid];
@@ -1112,6 +1150,43 @@ function CollectorsDataPanel() {
               ];
               return (
                 <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-3 rounded-md border p-3">
+                    <div className="size-20 overflow-hidden rounded-md border bg-muted grid place-items-center shrink-0">
+                      {collectorPhotos[open.employeeId] ? (
+                        <img
+                          src={collectorPhotos[open.employeeId]}
+                          alt={open.collector}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <ImagePlus className="size-8 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="text-xs text-muted-foreground">صورة المحصل</div>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        className="h-9 text-xs"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) saveCollectorPhoto(open.employeeId, file);
+                          e.currentTarget.value = "";
+                        }}
+                      />
+                      {collectorPhotos[open.employeeId] && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs"
+                          onClick={() => removeCollectorPhoto(open.employeeId)}
+                        >
+                          حذف الصورة
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                   {items.map((it) => (
                     <div
                       key={it.l}
