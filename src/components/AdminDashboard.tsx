@@ -1132,3 +1132,166 @@ function CollectorsDataPanel() {
     </div>
   );
 }
+
+function BackupsPanel() {
+  const listFn = useServerFn(listWalletBackups);
+  const restoreFn = useServerFn(restoreWalletBackup);
+  const deleteFn = useServerFn(deleteWalletBackup);
+  const [rows, setRows] = useState<
+    { id: string; created_at: string; created_by: string | null; account_count: number; total_amount: number }[]
+  >([]);
+  const [loading, setLoading] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [preview, setPreview] = useState<typeof rows[number] | null>(null);
+
+  const employeeId = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem("wallet:session") || "{}")?.employeeId || "";
+    } catch {
+      return "";
+    }
+  }, []);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await listFn({ data: { employeeId } });
+      setRows((res as any).backups || []);
+    } catch (e: any) {
+      toast.error("تعذر تحميل النسخ الاحتياطية: " + (e?.message || ""));
+    } finally {
+      setLoading(false);
+    }
+  }, [listFn, employeeId]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  const handleRestore = async (id: string) => {
+    if (!confirm("سيتم استرجاع هذه النسخة الاحتياطية واستبدال البيانات الحالية. هل تريد المتابعة؟"))
+      return;
+    setBusyId(id);
+    try {
+      await restoreFn({ data: { employeeId, backupId: id } });
+      toast.success("تم استرجاع النسخة الاحتياطية بنجاح");
+      setTimeout(() => window.location.reload(), 800);
+    } catch (e: any) {
+      toast.error("تعذر الاسترجاع: " + (e?.message || ""));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("سيتم حذف هذه النسخة الاحتياطية نهائياً. هل أنت متأكد؟")) return;
+    setBusyId(id);
+    try {
+      await deleteFn({ data: { employeeId, backupId: id } });
+      toast.success("تم حذف النسخة الاحتياطية");
+      await reload();
+    } catch (e: any) {
+      toast.error("تعذر الحذف: " + (e?.message || ""));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <Card className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="font-semibold">النسخ الاحتياطية للمحافظ</div>
+            <div className="text-xs text-muted-foreground">
+              تُنشأ تلقائياً قبل كل عملية تصفير. الاسترجاع متاح للإدارة فقط.
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => void reload()} disabled={loading}>
+            <RefreshCw className="size-4" />
+            تحديث
+          </Button>
+        </div>
+      </Card>
+
+      {loading && <div className="text-center text-sm text-muted-foreground">جارٍ التحميل...</div>}
+      {!loading && rows.length === 0 && (
+        <Card className="p-6 text-center text-sm text-muted-foreground">لا توجد نسخ احتياطية بعد.</Card>
+      )}
+
+      <div className="grid gap-2">
+        {rows.map((r) => {
+          const d = new Date(r.created_at);
+          return (
+            <Card key={r.id} className="p-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="size-10 rounded-xl bg-primary/10 text-primary grid place-items-center shrink-0">
+                  <Archive className="size-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm">
+                    {d.toLocaleDateString("ar-EG")} — {d.toLocaleTimeString("ar-EG")}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    منفذ: {r.created_by || "—"} • الحسابات: {r.account_count.toLocaleString("ar-EG")} •
+                    الرصيد: {formatCurrency(Number(r.total_amount) || 0)}
+                  </div>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <Button size="sm" variant="outline" onClick={() => setPreview(r)}>
+                    <Eye className="size-4" />
+                    استعراض
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => void handleRestore(r.id)}
+                    disabled={busyId === r.id}
+                  >
+                    <RotateCcw className="size-4" />
+                    استرجاع
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => void handleDelete(r.id)}
+                    disabled={busyId === r.id}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>تفاصيل النسخة الاحتياطية</DialogTitle>
+          </DialogHeader>
+          {preview && (
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-muted-foreground">التاريخ</span>
+                <span>{new Date(preview.created_at).toLocaleString("ar-EG")}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-muted-foreground">المنفذ</span>
+                <span>{preview.created_by || "—"}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-muted-foreground">عدد الحسابات</span>
+                <span className="tabular-nums">{preview.account_count.toLocaleString("ar-EG")}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-muted-foreground">إجمالي الرصيد</span>
+                <span className="tabular-nums">{formatCurrency(Number(preview.total_amount) || 0)}</span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
