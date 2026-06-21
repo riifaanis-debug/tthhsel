@@ -1514,16 +1514,18 @@ function CustomerSheet({
                     </EditField>
                   </div>
 
-                  {/* الصف: محجوز لصالح البنك | الإجراء (رقم مرجع الحجز) | بطاقة ناجز */}
+                  {/* الصف (RTL): ناجز (يمين) | الإجراء: الحجز التنفيذي (وسط) | أرصدة محجوزة لصالح البنك (يسار) */}
                   <div className="grid grid-cols-3 gap-2">
-                    <StatusPill
-                      label="محجوز لصالح البنك"
-                      icon={<Coins className="size-3.5 text-[#234E45]" />}
-                      bg="bg-white"
-                      centered
-                      active={isBankSeizedOn}
-                      onClick={() => toggleYesNo({}, "المبلغ المحجوز لصالح البنك")}
-                    />
+                    <button
+                      type="button"
+                      onClick={() => window.open("https://najiz.sa/applications/iexecution/Inquiry", "_blank")}
+                      className="rounded-xl bg-gradient-to-l from-[#EFE7D1] to-[#F7F3E5] border border-[#D9C792] p-2 flex items-center justify-center gap-1 hover:shadow-md transition-all"
+                    >
+                      <span className="text-[10px] font-bold text-[#7B5E1F] text-center leading-tight">
+                        التحقق من<br />طلب تنفيذ
+                      </span>
+                      <span className="text-[11px] font-extrabold text-[#A37B1A]">ناجز</span>
+                    </button>
                     <EditField label="الإجراء: الحجز التنفيذي - الرقم المرجعي" icon={<Bookmark className="size-3" />}>
                       <Input
                         value={get("رقم مرجع الحجز التنفيذي") ?? get("مرجع الحجز التنفيذي") ?? ""}
@@ -1539,16 +1541,21 @@ function CustomerSheet({
                         className={`${inputCls} tabular-nums`}
                       />
                     </EditField>
-                    <button
-                      type="button"
-                      onClick={() => window.open("https://najiz.sa/applications/iexecution/Inquiry", "_blank")}
-                      className="rounded-xl bg-gradient-to-l from-[#EFE7D1] to-[#F7F3E5] border border-[#D9C792] p-2 flex items-center justify-center gap-1 hover:shadow-md transition-all"
-                    >
-                      <span className="text-[10px] font-bold text-[#7B5E1F] text-center leading-tight">
-                        التحقق من<br />طلب تنفيذ
-                      </span>
-                      <span className="text-[11px] font-extrabold text-[#A37B1A]">ناجز</span>
-                    </button>
+                    <EditField label="أرصدة محجوزة لصالح البنك" icon={<Coins className="size-3" />}>
+                      <Input
+                        value={get("أرصدة محجوزة لصالح البنك") ?? get("ارصدة محجوزه لصالح البنك") ?? ""}
+                        onChange={(ev) => {
+                          const val = ev.target.value.replace(/[^0-9.]/g, "");
+                          setEdit({
+                            "أرصدة محجوزة لصالح البنك": val,
+                            "ارصدة محجوزه لصالح البنك": val,
+                          });
+                        }}
+                        inputMode="decimal"
+                        placeholder="0.00"
+                        className={`${inputCls} tabular-nums`}
+                      />
+                    </EditField>
                   </div>
 
                   {/* مبلغ السداد | نوع السداد */}
