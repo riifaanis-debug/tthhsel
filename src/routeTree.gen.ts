@@ -15,6 +15,7 @@ import { Route as ThirdPartyRouteImport } from './routes/third-party'
 import { Route as MailRouteImport } from './routes/mail'
 import { Route as LookupRouteImport } from './routes/lookup'
 import { Route as DiscountCardRouteImport } from './routes/discount-card'
+import { Route as CollectedRouteImport } from './routes/collected'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -48,6 +49,11 @@ const DiscountCardRoute = DiscountCardRouteImport.update({
   path: '/discount-card',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectedRoute = CollectedRouteImport.update({
+  id: '/collected',
+  path: '/collected',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalculatorRoute = CalculatorRouteImport.update({
   id: '/calculator',
   path: '/calculator',
@@ -62,6 +68,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
+  '/collected': typeof CollectedRoute
   '/discount-card': typeof DiscountCardRoute
   '/lookup': typeof LookupRoute
   '/mail': typeof MailRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
+  '/collected': typeof CollectedRoute
   '/discount-card': typeof DiscountCardRoute
   '/lookup': typeof LookupRoute
   '/mail': typeof MailRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
+  '/collected': typeof CollectedRoute
   '/discount-card': typeof DiscountCardRoute
   '/lookup': typeof LookupRoute
   '/mail': typeof MailRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/calculator'
+    | '/collected'
     | '/discount-card'
     | '/lookup'
     | '/mail'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/calculator'
+    | '/collected'
     | '/discount-card'
     | '/lookup'
     | '/mail'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/calculator'
+    | '/collected'
     | '/discount-card'
     | '/lookup'
     | '/mail'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalculatorRoute: typeof CalculatorRoute
+  CollectedRoute: typeof CollectedRoute
   DiscountCardRoute: typeof DiscountCardRoute
   LookupRoute: typeof LookupRoute
   MailRoute: typeof MailRoute
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DiscountCardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collected': {
+      id: '/collected'
+      path: '/collected'
+      fullPath: '/collected'
+      preLoaderRoute: typeof CollectedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calculator': {
       id: '/calculator'
       path: '/calculator'
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalculatorRoute: CalculatorRoute,
+  CollectedRoute: CollectedRoute,
   DiscountCardRoute: DiscountCardRoute,
   LookupRoute: LookupRoute,
   MailRoute: MailRoute,
