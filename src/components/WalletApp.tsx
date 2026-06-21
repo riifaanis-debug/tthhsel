@@ -109,6 +109,7 @@ import CollectorInfoCard from "@/components/CollectorInfoCard";
 import pfIcon from "@/assets/pf-icon.png.asset.json";
 import alIcon from "@/assets/al-icon.png.asset.json";
 import ccIcon from "@/assets/cc-icon.png.asset.json";
+import najizVerifyBtn from "@/assets/najiz-verify-btn.png.asset.json";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -1519,12 +1520,13 @@ function CustomerSheet({
                     <button
                       type="button"
                       onClick={() => window.open("https://najiz.sa/applications/iexecution/Inquiry", "_blank")}
-                      className="rounded-xl bg-gradient-to-l from-[#EFE7D1] to-[#F7F3E5] border border-[#D9C792] p-2 flex items-center justify-center gap-1 hover:shadow-md transition-all"
+                      className="rounded-xl overflow-hidden p-0 border-0 bg-transparent hover:opacity-90 transition-opacity"
                     >
-                      <span className="text-[10px] font-bold text-[#7B5E1F] text-center leading-tight">
-                        التحقق من<br />طلب تنفيذ
-                      </span>
-                      <span className="text-[11px] font-extrabold text-[#A37B1A]">ناجز</span>
+                      <img
+                        src={najizVerifyBtn.url}
+                        alt="التحقق من طلب تنفيذ - ناجز"
+                        className="w-full h-full object-contain"
+                      />
                     </button>
                     <EditField label="الإجراء: الحجز التنفيذي - الرقم المرجعي" icon={<Bookmark className="size-3" />}>
                       <Input
