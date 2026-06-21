@@ -129,6 +129,7 @@ export default function AdminDashboard() {
 }
 
 function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
+  const clearWalletFn = useServerFn(clearWalletCustomers);
   const pendingCount = useMemo(() => {
     try {
       const all = JSON.parse(localStorage.getItem(REQ_KEY) || "[]") as ThirdPartyReq[];
