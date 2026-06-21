@@ -136,18 +136,28 @@ function TemplateEditor({
         )}
       </div>
 
-      {/* Field 1: Collector name in sentence */}
+      {/* Identifier line: collector name + gender */}
       <div className="space-y-1">
         <label className="text-xs font-semibold text-[#133E35]">سطر التعريف</label>
-        <div className="flex items-center gap-1 flex-wrap text-xs bg-muted/40 p-2 rounded-md">
-          <span className="font-medium">معاك :</span>
+        <div className="flex items-center gap-2 flex-wrap text-xs bg-muted/40 p-2 rounded-md">
           <Input
             value={template.collectorName}
             onChange={(e) => onChange({ collectorName: e.target.value })}
             placeholder="اسم المحصل"
-            className="h-7 flex-1 min-w-[120px] max-w-[200px] text-xs"
+            className="h-8 flex-1 min-w-[140px] text-xs"
           />
-          <span className="font-medium">من إدارة البنك الأهلي بجدة - إدارة التحصيل</span>
+          <Select
+            value={template.gender}
+            onValueChange={(v) => onChange({ gender: v as WaGender })}
+          >
+            <SelectTrigger className="h-8 w-[110px] text-xs">
+              <SelectValue placeholder="الجنس" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="الأخ">الأخ</SelectItem>
+              <SelectItem value="الأخت">الأخت</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -157,12 +167,13 @@ function TemplateEditor({
         <Textarea
           value={template.body}
           onChange={(e) => onChange({ body: e.target.value })}
-          placeholder="اكتب نص الرسالة هنا... يمكنك استخدام {اسم العميل} كمتغير"
+          placeholder="اكتب نص الرسالة هنا... المتغيرات: {اسم العميل} {اسم المحصل} {الجنس}"
           className="min-h-[180px] w-full text-xs leading-relaxed"
           dir="rtl"
         />
         <p className="text-[10px] text-muted-foreground">
-          المتغيرات المتاحة: <code>{"{اسم العميل}"}</code>
+          المتغيرات المتاحة: <code>{"{اسم العميل}"}</code> <code>{"{اسم المحصل}"}</code>{" "}
+          <code>{"{الجنس}"}</code>
         </p>
       </div>
 
@@ -171,10 +182,11 @@ function TemplateEditor({
         <label className="text-xs font-semibold text-[#133E35]">معاينة الرسالة على واتساب</label>
         <IphonePreview
           senderName={template.collectorName}
-          message={`${buildHeader(template.collectorName)}\n\n${template.body.replace(
-            /\{اسم العميل\}/g,
-            "العميل",
-          )}`}
+          message={applyTemplateVars(template.body, {
+            clientName: "العميل",
+            collectorName: template.collectorName,
+            gender: template.gender,
+          })}
         />
       </div>
     </Card>
