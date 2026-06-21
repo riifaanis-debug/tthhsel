@@ -1588,8 +1588,11 @@ function CustomerSheet({
                     </EditField>
                     <EditField label="نوع السداد" icon={<ChevronDown className="size-3" />}>
                       <Select
-                        value={state?.paymentType || ""}
-                        onValueChange={(v) => markDirtyUpdate({ paymentType: v })}
+                        value={state?.paymentType || (state?.edits as any)?.["نوع السداد"] || ""}
+                        onValueChange={(v) => {
+                          markDirtyUpdate({ paymentType: v });
+                          setEdit({ "نوع السداد": v });
+                        }}
                       >
                         <SelectTrigger className={inputCls}>
                           <SelectValue placeholder="اختر نوع السداد" />

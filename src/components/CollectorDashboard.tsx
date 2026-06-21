@@ -59,6 +59,7 @@ export function CollectorDashboard({
   badges,
   groupEnabled = false,
   onSelectAction,
+  onCollectedClick,
 }: {
   collected: number;
   totalAccounts: number;
@@ -75,6 +76,7 @@ export function CollectorDashboard({
   badges: { promises: number; exemptions: number; reschedules: number };
   groupEnabled?: boolean;
   onSelectAction: (key: QuickKey) => void;
+  onCollectedClick?: () => void;
 }) {
   const now = useNow();
   const eom = endOfMonth(now);
@@ -161,8 +163,10 @@ export function CollectorDashboard({
 
         {/* Totals: collected + remaining to target */}
         <div className="grid grid-cols-2 gap-1.5">
-          <div
-            className={`${fieldCls} rounded-[12px] py-1.5 px-2.5 text-right flex flex-col gap-0.5 min-h-[44px]`}
+          <button
+            type="button"
+            onClick={() => onCollectedClick?.()}
+            className={`${fieldCls} rounded-[12px] py-1.5 px-2.5 text-right flex flex-col gap-0.5 min-h-[44px] cursor-pointer hover:bg-[#e5e2dc] transition-colors w-full`}
           >
             <div className="flex items-center justify-start gap-1 text-[#234E45] text-[10px] font-bold">
               <Target className="size-3" />
@@ -172,7 +176,7 @@ export function CollectorDashboard({
               {collected.toLocaleString("en-US")}{" "}
               <span className="text-[#234E45] text-[8.5px] font-medium">SAR</span>
             </div>
-          </div>
+          </button>
           <div
             className={`${fieldCls} rounded-[12px] py-1.5 px-2.5 text-right flex flex-col gap-0.5 min-h-[44px]`}
           >

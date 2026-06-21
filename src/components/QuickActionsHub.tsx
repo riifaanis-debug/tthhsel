@@ -192,6 +192,7 @@ export function QuickActionsHub({
           }
           setOpen(k);
         }}
+        onCollectedClick={() => navigate({ to: "/collected" })}
       />
 
       <PromisesDialog open={open === "promises"} onClose={() => setOpen(null)} />
