@@ -270,7 +270,7 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-base text-destructive">تصفير وتفريغ الذاكرة</div>
           <div className="text-xs text-muted-foreground mt-0.5">
-            تنظيف ذاكرة الجهاز المؤقتة (Cache / LocalStorage) مع الاحتفاظ بالجلسة
+            مسح جميع بيانات المحصلين (الحسابات، السداد، الوعود) وتنظيف الذاكرة
           </div>
         </div>
       </button>
