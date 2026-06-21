@@ -203,7 +203,7 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
   const clearCache = async () => {
     if (
       !confirm(
-        "سيتم تصفير جميع بيانات المحفظة وحسابات وسداد ووعود جميع المحصلين، وتفريغ ذاكرة الجهاز المؤقتة. هل تريد المتابعة؟",
+        "سيتم تفريغ جميع بيانات المحافظ الحالية من صفحات المحصلين مع الاحتفاظ بنسخة احتياطية كاملة لدى الإدارة. هل ترغب بالمتابعة؟",
       )
     )
       return;
@@ -214,9 +214,9 @@ function HomeGrid({ onSelect }: { onSelect: (t: Tab) => void }) {
         employeeId = sessionRaw ? (JSON.parse(sessionRaw)?.employeeId || "") : "";
       } catch {}
 
-      // 1) Wipe DB tables (customers, customer_states, customer_notes, contact_logs)
+      // 1) Snapshot then wipe DB tables (customers, customer_states, customer_notes, contact_logs)
       try {
-        await clearWalletFn({ data: { employeeId } });
+        await clearWalletFn({ data: { employeeId, createdBy: employeeId } });
       } catch (e: any) {
         toast.error("تعذر تصفير بيانات قاعدة البيانات: " + (e?.message || ""));
         return;
