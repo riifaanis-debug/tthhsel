@@ -441,7 +441,7 @@ function WalletViewPage() {
               لا توجد بيانات
             </div>
           ) : (
-            <Table className="text-[10.5px] border-collapse table-fixed">
+            <Table className="text-[10.5px] border-collapse table-auto w-max min-w-full">
               <TableHeader className="sticky top-0 bg-secondary z-10">
                 <TableRow>
                   <TableHead className="w-[38px] text-center font-bold text-[#133E35] whitespace-nowrap border border-[#d4ddd9] bg-secondary">
@@ -497,7 +497,7 @@ function WalletViewPage() {
                       {activeColumns.map((c) => {
                         const isMoney = MONEY_KEYS.has(c.key);
                         const align = isMoney ? "text-right" : "text-center";
-                        const baseCls = `whitespace-nowrap text-[#133E35] border border-[#e5ebe8] ${align} ${columnWidthClass(c.key)}`;
+                        const baseCls = `${cellTextWrapClass(c.key)} text-[#133E35] border border-[#e5ebe8] ${align} ${columnWidthClass(c.key)}`;
                         const eff = effectiveValue(row, c.key, st, c.type);
 
                         if (c.type === "yesno") {
@@ -589,7 +589,7 @@ function WalletViewPage() {
                             <TableCell key={c.key} dir="rtl" className={`${baseCls} p-1`}>
                               <Select value={eff || undefined} onValueChange={(v) => setEdit(key, c.key, v)}>
                                 <SelectTrigger
-                                  className="h-6 text-[10.5px] px-1 text-right justify-between flex-row font-extrabold w-full border-0 bg-transparent shadow-none mx-auto rounded-none focus:ring-0"
+                                  className="h-6 text-[10.5px] px-1 text-center justify-center flex-row font-extrabold w-full border-0 bg-transparent shadow-none mx-auto rounded-none focus:ring-0"
                                   style={actionStyleInline ? { color: actionStyleInline.color } : undefined}
                                 >
                                   <SelectValue placeholder="—" />
@@ -602,12 +602,8 @@ function WalletViewPage() {
                                       style={{ color: o.color }}
                                       className="text-right flex justify-end font-extrabold text-[12px] cursor-pointer"
                                     >
-                                      <span className="flex items-center gap-2 w-full justify-end text-right">
-                                        <span>{o.label}</span>
-                                        <span
-                                          className="inline-block w-2 h-2 rounded-full shrink-0"
-                                          style={{ backgroundColor: o.color }}
-                                        />
+                                      <span className="w-full text-center font-extrabold">
+                                        {o.label}
                                       </span>
                                     </SelectItem>
                                   ))}
@@ -676,7 +672,7 @@ function WalletViewPage() {
                                   navigate({ to: "/" });
                                 }}
                               >
-                                {c.key === "اسم العميل" ? shortenArabicName(display) : display}
+                                {display}
                               </button>
                             </TableCell>
                           );
@@ -684,7 +680,7 @@ function WalletViewPage() {
 
                         return (
                           <TableCell key={c.key} dir={c.type === "phone" ? "ltr" : "rtl"} className={baseCls}>
-                            {c.key === "اسم العميل" ? shortenArabicName(display) : display}
+                            {display}
                           </TableCell>
                         );
                       })}
@@ -701,22 +697,35 @@ function WalletViewPage() {
 }
 
 function shortenArabicName(value: string): string {
-  const parts = String(value || "").trim().split(/\s+/).filter(Boolean);
-  if (parts.length <= 4) return value;
-  return parts.slice(0, 4).join(" ");
+  return String(value || "");
+}
+
+function cellTextWrapClass(key: string): string {
+  switch (key) {
+    case "اسم العميل":
+    case "اسم المحصل":
+    case "اسم المشرف":
+    case "الوصف":
+      return "whitespace-normal break-words leading-relaxed";
+    default:
+      return "whitespace-nowrap";
+  }
 }
 
 function columnWidthClass(key: string): string {
   switch (key) {
-    case "اسم العميل": return "w-[170px] max-w-[170px] overflow-hidden text-ellipsis";
-    case "رقم الجوال": return "w-[135px] max-w-[135px]";
-    case "رقم الحساب": return "w-[145px] max-w-[145px]";
-    case "الاكشن": return "w-[128px] max-w-[128px]";
-    case "تاريخ التجميد": return "w-[116px] max-w-[116px]";
-    case "نوع المنتج": return "w-[72px] max-w-[72px]";
-    case "NOTE": return "w-[82px] max-w-[82px]";
-    case "مبلغ المديونية": return "w-[120px] max-w-[120px]";
-    default: return "w-[110px] max-w-[110px]";
+    case "اسم العميل": return "w-[280px] min-w-[280px] max-w-[280px]";
+    case "اسم المحصل": return "w-[320px] min-w-[320px] max-w-[320px]";
+    case "اسم المشرف": return "w-[320px] min-w-[320px] max-w-[320px]";
+    case "الوصف": return "w-[480px] min-w-[480px] max-w-[480px]";
+    case "رقم الجوال": return "w-[135px] min-w-[135px] max-w-[135px]";
+    case "رقم الحساب": return "w-[145px] min-w-[145px] max-w-[145px]";
+    case "الاكشن": return "w-[180px] min-w-[180px] max-w-[180px]";
+    case "تاريخ التجميد": return "w-[116px] min-w-[116px] max-w-[116px]";
+    case "نوع المنتج": return "w-[72px] min-w-[72px] max-w-[72px]";
+    case "NOTE": return "w-[82px] min-w-[82px] max-w-[82px]";
+    case "مبلغ المديونية": return "w-[120px] min-w-[120px] max-w-[120px]";
+    default: return "w-[120px] min-w-[120px] max-w-[120px]";
   }
 }
 
