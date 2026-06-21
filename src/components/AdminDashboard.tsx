@@ -130,6 +130,7 @@ export default function AdminDashboard() {
         {tab === "requests" && <RequestsPanel />}
         {tab === "collectors" && <CollectorsDataPanel />}
         {tab === "permissions" && <PermissionsPanel />}
+        {tab === "backups" && <BackupsPanel />}
       </main>
     </div>
   );
