@@ -886,22 +886,24 @@ function CustomerRow({
   const phone = normalizePhone(c["رقم الجوال"]);
   const isPromise = action === "وعد سداد";
   return (
-    <Card className="relative p-3 hover:shadow-md transition-shadow">
+    <Card
+      className="relative p-3 hover:shadow-md transition-shadow cursor-pointer"
+      onClick={onOpen}
+    >
       {isPromise && (
         <span className="absolute -top-2 -right-3 z-10 px-2.5 py-0.5 rounded-md text-[10px] font-extrabold tracking-wide bg-black text-amber-300 shadow-[0_0_14px_2px_rgba(251,191,36,0.55)] ring-1 ring-amber-400/60 -rotate-12 animate-pulse">
           وعد سداد
         </span>
       )}
-      <button
-        onClick={onOpen}
+      <div
         aria-label="فتح صفحة العميل"
         className="absolute left-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-primary/40 text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
       >
         <ArrowLeft className="size-4" />
         <Eye className="size-4" />
-      </button>
+      </div>
       <div className="flex items-start gap-3">
-        <button onClick={onOpen} className="flex-1 min-w-0 text-right">
+        <div className="flex-1 min-w-0 text-right">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold truncate">{c["اسم العميل"] || "بدون اسم"}</span>
             {contacted && (
@@ -925,13 +927,13 @@ function CustomerRow({
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             {c["التثبيت"] && <span>التثبيت: {c["التثبيت"]}</span>}
           </div>
-        </button>
+        </div>
       </div>
-      <div className="mt-3 flex items-center gap-1.5">
+      <div className="mt-3 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
         <Button
           size="icon"
           variant="default"
-          onClick={onCall}
+          onClick={(e) => { e.stopPropagation(); onCall(); }}
           disabled={!phone}
           className="size-8"
           aria-label="اتصال"
@@ -940,7 +942,7 @@ function CustomerRow({
         </Button>
         <Button
           size="icon"
-          onClick={onWhats}
+          onClick={(e) => { e.stopPropagation(); onWhats(); }}
           disabled={!phone}
           className="size-8 bg-success text-success-foreground hover:bg-success/90"
           aria-label="واتساب"
@@ -950,7 +952,7 @@ function CustomerRow({
         <Button
           size="icon"
           variant="outline"
-          onClick={onCopy}
+          onClick={(e) => { e.stopPropagation(); onCopy(); }}
           disabled={!phone}
           className="size-8"
           aria-label="نسخ"
