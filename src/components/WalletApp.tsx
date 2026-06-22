@@ -1551,17 +1551,20 @@ function CustomerSheet({
                     </EditField>
                     <EditField label="أرصدة محجوزة" icon={<Coins className="size-3" />}>
                       <Input
-                        value={get("أرصدة محجوزة لصالح البنك") ?? get("ارصدة محجوزه لصالح البنك") ?? ""}
+                        type="text"
+                        inputMode="decimal"
+                        value={formatMoneyInput(
+                          String(get("أرصدة محجوزة لصالح البنك") ?? get("ارصدة محجوزه لصالح البنك") ?? "")
+                        )}
                         onChange={(ev) => {
-                          const val = ev.target.value.replace(/[^0-9.]/g, "");
+                          const val = parseMoneyInput(ev.target.value);
                           setEdit({
                             "أرصدة محجوزة لصالح البنك": val,
                             "ارصدة محجوزه لصالح البنك": val,
                           });
                         }}
-                        inputMode="decimal"
                         placeholder="أرصدة محجوزة لصالح البنك"
-                        className={`${inputCls} tabular-nums`}
+                        className={`${inputCls} tabular-nums text-right`}
                       />
                     </EditField>
                   </div>
