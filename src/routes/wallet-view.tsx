@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table";
 import { getWalletCustomers } from "@/lib/wallet.functions";
 import { getSession } from "@/components/LoginGate";
-import { customerKey, formatCurrency } from "@/lib/wallet-types";
+import { customerKey, formatCurrency, formatMoney, formatMoneyInput, parseMoneyInput } from "@/lib/wallet-types";
 import { useCustomerStates } from "@/lib/wallet-store";
 import { freezeFromJwo, readJwo } from "@/lib/freeze-date";
 import {
