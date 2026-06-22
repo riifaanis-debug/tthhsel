@@ -199,13 +199,14 @@ export function CollectorDashboard({
         <button
           type="button"
           onClick={() => onSelectAction("salary")}
-          className={`${buttonFieldCls} rounded-[14px] px-3 py-2 flex items-center justify-between w-full cursor-pointer select-none text-[#133E35] font-sans text-right`}
+          className="rounded-[14px] px-3 py-2.5 flex items-center justify-between w-full cursor-pointer select-none text-[#133E35] font-sans text-right bg-[#dbe7f5]/70 hover:bg-[#cddff2]/80 active:scale-95 transition-all shadow-sm border border-[#c7d8ec]/60"
         >
           <div className="flex items-center gap-2">
             <Briefcase className="size-3.5 text-[#ec4899]" />
             <span className="text-[10.5px] font-bold text-[#133E35] text-right">عملاء رواتب</span>
           </div>
-          <div className="text-[10.5px] text-[#234E45] font-bold text-left tabular-nums">
+          <div className="flex items-center gap-1.5 text-[10.5px] text-[#234E45] font-bold tabular-nums">
+            <MousePointerClick className="size-3.5 text-[#3b82f6]" />
             <span className="text-[#133E35] font-black inline-block ml-1">{filteredSalary}</span>
             عميل
           </div>
@@ -215,13 +216,14 @@ export function CollectorDashboard({
         <button
           type="button"
           onClick={() => onSelectAction("deceased")}
-          className={`${buttonFieldCls} rounded-[14px] px-3 py-2 flex items-center justify-between w-full cursor-pointer select-none text-[#133E35] font-sans text-right`}
+          className="rounded-[14px] px-3 py-2.5 flex items-center justify-between w-full cursor-pointer select-none text-[#133E35] font-sans text-right bg-[#f5dcdc]/70 hover:bg-[#efcccc]/80 active:scale-95 transition-all shadow-sm border border-[#ecc7c7]/60"
         >
           <div className="flex items-center gap-2">
             <Heart className="size-3.5 text-[#ef4444]" />
             <span className="text-[10.5px] font-bold text-[#133E35] text-right">عملاء متوفين</span>
           </div>
-          <div className="text-[10.5px] text-[#234E45] font-bold text-left tabular-nums">
+          <div className="flex items-center gap-1.5 text-[10.5px] text-[#234E45] font-bold tabular-nums">
+            <MousePointerClick className="size-3.5 text-[#3b82f6]" />
             <span className="text-[#133E35] font-black inline-block ml-1">{filteredDeceased}</span>
             عميل
           </div>
@@ -231,7 +233,7 @@ export function CollectorDashboard({
         <button
           type="button"
           onClick={() => onSelectAction("sibel")}
-          className={`${buttonFieldCls} rounded-[14px] px-3 py-2 flex items-center justify-between w-full cursor-pointer select-none text-[#133E35] font-sans text-right`}
+          className="rounded-[14px] px-3 py-2.5 flex items-center justify-between w-full cursor-pointer select-none text-[#133E35] font-sans text-right bg-[#f3e9c7]/70 hover:bg-[#ecdfb1]/80 active:scale-95 transition-all shadow-sm border border-[#e8dbab]/60"
         >
           <div className="flex items-center gap-2">
             <FileText className="size-3.5 text-[#f59e0b]" />
@@ -239,12 +241,14 @@ export function CollectorDashboard({
               عملاء لديهم طلبات سابقة
             </span>
           </div>
-          <div className="text-[10.5px] text-[#234E45] font-bold text-left tabular-nums">
+          <div className="flex items-center gap-1.5 text-[10.5px] text-[#234E45] font-bold tabular-nums">
+            <MousePointerClick className="size-3.5 text-[#3b82f6]" />
             <span className="text-[#133E35] font-black inline-block ml-1">{filteredSibel}</span>
             حساب
           </div>
         </button>
       </div>
+
 
       {/* ============ Card 3: Actions ============ */}
       <div className={cardCls}>
