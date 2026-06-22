@@ -215,8 +215,7 @@ function displayValue(row: any, key: string, st: any, type?: ColType): string {
   if (!v) return "";
 
   if (type === "currency") {
-    const f = formatCurrency(v as any);
-    return f === "—" ? "" : f;
+    return formatMoney(v as any);
   }
 
   if (type === "phone") {
