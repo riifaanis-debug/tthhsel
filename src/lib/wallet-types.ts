@@ -98,10 +98,51 @@ export function formatPhone(p?: string | null): string {
 export function formatCurrency(n?: number | string | null): string {
   if (n == null) return "—";
   const clean = typeof n === "string" ? n.replace(/,/g, "") : n;
+  if (typeof clean === "string" && clean.trim() === "") return "—";
   const num = Number(clean);
   if (isNaN(num)) return "—";
   return new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(num);
+}
+
+/**
+ * Money display formatter. Always returns thousand-separators + 2 decimals,
+ * or "" for empty/invalid values (never "0.00" for empty input).
+ * Use for: مبلغ المديونية، أرصدة محجوزة، السداد — display only.
+ */
+export function formatMoney(n?: number | string | null): string {
+  if (n == null) return "";
+  const s = typeof n === "string" ? n.replace(/,/g, "").trim() : n;
+  if (s === "" ) return "";
+  const num = Number(s);
+  if (!isFinite(num)) return "";
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+}
+
+/** Live-formatting helper for money inputs: keeps user's partial decimals
+ *  (e.g. "1234." → "1,234.") and clamps to 2 fractional digits. */
+export function formatMoneyInput(raw: string): string {
+  if (raw == null) return "";
+  let v = String(raw).replace(/,/g, "").replace(/[^0-9.]/g, "");
+  const firstDot = v.indexOf(".");
+  if (firstDot !== -1) {
+    v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, "");
+  }
+  if (v === "" || v === ".") return v;
+  const [intPart, decPartRaw] = v.split(".");
+  const grouped = (intPart || "0").replace(/^0+(?=\d)/, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
+  if (decPartRaw === undefined) return grouped;
+  const decPart = decPartRaw.slice(0, 2);
+  return `${grouped}.${decPart}`;
+}
+
+/** Strip formatting back to a raw numeric string for storage. */
+export function parseMoneyInput(raw: string): string {
+  if (raw == null) return "";
+  return String(raw).replace(/,/g, "").replace(/[^0-9.]/g, "");
 }

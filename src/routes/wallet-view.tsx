@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table";
 import { getWalletCustomers } from "@/lib/wallet.functions";
 import { getSession } from "@/components/LoginGate";
-import { customerKey, formatCurrency } from "@/lib/wallet-types";
+import { customerKey, formatCurrency, formatMoney, formatMoneyInput, parseMoneyInput } from "@/lib/wallet-types";
 import { useCustomerStates } from "@/lib/wallet-store";
 import { freezeFromJwo, readJwo } from "@/lib/freeze-date";
 import {
@@ -215,8 +215,7 @@ function displayValue(row: any, key: string, st: any, type?: ColType): string {
   if (!v) return "";
 
   if (type === "currency") {
-    const f = formatCurrency(v as any);
-    return f === "—" ? "" : f;
+    return formatMoney(v as any);
   }
 
   if (type === "phone") {
@@ -638,10 +637,28 @@ function WalletViewPage() {
 
                         if (c.type === "editText" || c.type === "editNumber" || c.type === "editMoney") {
                           const numeric = c.type === "editNumber" || c.type === "editMoney";
+                          const isMoneyCell = c.type === "editMoney" || isMoney;
+                          const displayVal = isMoneyCell ? formatMoney(eff) : eff;
                           return (
                             <TableCell key={c.key} dir="rtl" className={baseCls}>
                               {readOnly ? (
-                                eff || "—"
+                                displayVal || (isMoneyCell ? "" : "—")
+                              ) : isMoneyCell ? (
+                                <Input
+                                  type="text"
+                                  inputMode="decimal"
+                                  defaultValue={displayVal}
+                                  onChange={(e) => {
+                                    const formatted = formatMoneyInput(e.target.value);
+                                    if (formatted !== e.target.value) e.target.value = formatted;
+                                  }}
+                                  onBlur={(e) => {
+                                    const raw = parseMoneyInput(e.target.value);
+                                    if (raw !== eff) setEdit(key, c.key, raw);
+                                    e.target.value = formatMoney(raw);
+                                  }}
+                                  className="h-6 text-[10.5px] px-1 border-0 bg-transparent shadow-none focus-visible:ring-0 text-right tabular-nums"
+                                />
                               ) : (
                                 <Input
                                   type={numeric ? "number" : "text"}
@@ -651,7 +668,7 @@ function WalletViewPage() {
                                     if (e.target.value !== eff) setEdit(key, c.key, e.target.value);
                                   }}
                                   className={`h-6 text-[10.5px] px-1 border-0 bg-transparent shadow-none focus-visible:ring-0 ${
-                                    isMoney || c.type === "editMoney" || numeric ? "text-right" : "text-center"
+                                    numeric ? "text-right" : "text-center"
                                   }`}
                                 />
                               )}

@@ -122,6 +122,9 @@ import {
   type Customer,
   customerKey,
   formatCurrency,
+  formatMoney,
+  formatMoneyInput,
+  parseMoneyInput,
   formatPhone,
   normalizePhone,
 } from "@/lib/wallet-types";
@@ -1489,27 +1492,16 @@ function CustomerSheet({
                           inputMode="decimal"
                           pattern="[0-9.,]*"
                           placeholder="0.00"
-                          value={(() => {
-                            if (!seizedVal) return "";
-                            const [intPart, decPart] = String(seizedVal).split(".");
-                            const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            return decPart !== undefined ? `${grouped}.${decPart}` : grouped;
-                          })()}
+                          value={formatMoneyInput(String(seizedVal ?? ""))}
                           onChange={(ev) => {
-                            let val = ev.target.value.replace(/,/g, "").replace(/[^0-9.]/g, "");
-                            const firstDot = val.indexOf(".");
-                            if (firstDot !== -1) {
-                              val =
-                                val.slice(0, firstDot + 1) +
-                                val.slice(firstDot + 1).replace(/\./g, "");
-                            }
+                            const val = parseMoneyInput(ev.target.value);
                             setEdit({
                               "أرصدة محجوزة": val,
                               "ارصدة محجوزه": val,
                               "ارصده محجوزه": val,
                             });
                           }}
-                          className={`${inputCls} tabular-nums pl-10`}
+                          className={`${inputCls} tabular-nums pl-10 text-right`}
                         />
                         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-[#0E8F4F]">
                           SAR
@@ -1548,17 +1540,20 @@ function CustomerSheet({
                     </EditField>
                     <EditField label="أرصدة محجوزة" icon={<Coins className="size-3" />}>
                       <Input
-                        value={get("أرصدة محجوزة لصالح البنك") ?? get("ارصدة محجوزه لصالح البنك") ?? ""}
+                        type="text"
+                        inputMode="decimal"
+                        value={formatMoneyInput(
+                          String(get("أرصدة محجوزة لصالح البنك") ?? get("ارصدة محجوزه لصالح البنك") ?? "")
+                        )}
                         onChange={(ev) => {
-                          const val = ev.target.value.replace(/[^0-9.]/g, "");
+                          const val = parseMoneyInput(ev.target.value);
                           setEdit({
                             "أرصدة محجوزة لصالح البنك": val,
                             "ارصدة محجوزه لصالح البنك": val,
                           });
                         }}
-                        inputMode="decimal"
                         placeholder="أرصدة محجوزة لصالح البنك"
-                        className={`${inputCls} tabular-nums`}
+                        className={`${inputCls} tabular-nums text-right`}
                       />
                     </EditField>
                   </div>
@@ -1568,19 +1563,22 @@ function CustomerSheet({
                     <EditField label="مبلغ السداد" icon={<Wallet className="size-3" />}>
                       <div className="relative">
                         <Input
-                          type="number"
-                          inputMode="numeric"
+                          type="text"
+                          inputMode="decimal"
                           placeholder="0.00"
-                          value={state?.paymentAmount ?? ""}
+                          value={formatMoneyInput(
+                            state?.paymentAmount == null ? "" : String(state.paymentAmount)
+                          )}
                           onChange={(ev) => {
-                            const numVal = ev.target.value === "" ? null : Number(ev.target.value);
+                            const raw = parseMoneyInput(ev.target.value);
+                            const numVal = raw === "" ? null : Number(raw);
                             markDirtyUpdate({
-                              paymentAmount: numVal,
-                              ...(ev.target.value === "" ? { paymentType: null } : {}),
+                              paymentAmount: isNaN(numVal as number) ? null : numVal,
+                              ...(raw === "" ? { paymentType: null } : {}),
                             });
-                            setEdit({ السداد: numVal });
+                            setEdit({ السداد: isNaN(numVal as number) ? null : numVal });
                           }}
-                          className={`${inputCls} tabular-nums pl-10`}
+                          className={`${inputCls} tabular-nums pl-10 text-right`}
                         />
                         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#0E8F4F]">
                           SAR
