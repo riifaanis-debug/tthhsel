@@ -1492,27 +1492,16 @@ function CustomerSheet({
                           inputMode="decimal"
                           pattern="[0-9.,]*"
                           placeholder="0.00"
-                          value={(() => {
-                            if (!seizedVal) return "";
-                            const [intPart, decPart] = String(seizedVal).split(".");
-                            const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            return decPart !== undefined ? `${grouped}.${decPart}` : grouped;
-                          })()}
+                          value={formatMoneyInput(String(seizedVal ?? ""))}
                           onChange={(ev) => {
-                            let val = ev.target.value.replace(/,/g, "").replace(/[^0-9.]/g, "");
-                            const firstDot = val.indexOf(".");
-                            if (firstDot !== -1) {
-                              val =
-                                val.slice(0, firstDot + 1) +
-                                val.slice(firstDot + 1).replace(/\./g, "");
-                            }
+                            const val = parseMoneyInput(ev.target.value);
                             setEdit({
                               "أرصدة محجوزة": val,
                               "ارصدة محجوزه": val,
                               "ارصده محجوزه": val,
                             });
                           }}
-                          className={`${inputCls} tabular-nums pl-10`}
+                          className={`${inputCls} tabular-nums pl-10 text-right`}
                         />
                         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-[#0E8F4F]">
                           SAR
