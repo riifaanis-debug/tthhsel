@@ -11,6 +11,7 @@ import {
   CalendarClock,
   Mail,
   Lock,
+  MousePointerClick,
 } from "lucide-react";
 import { toast } from "sonner";
 
