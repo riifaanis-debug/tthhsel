@@ -499,28 +499,34 @@ function AchievementMeter({
           className="absolute inset-0"
           style={{
             background: "linear-gradient(90deg,#ef4444,#f97316,#eab308,#84cc16,#22c55e)",
-            opacity: staticMode ? 1 : 0.18,
-            filter: staticMode ? "none" : "saturate(0.6)",
+            opacity: staticMode ? (realPct > 0 ? 0.2 : 0.08) : 0.18,
+            filter: staticMode && realPct <= 0 ? "saturate(0.2)" : "saturate(0.6)",
           }}
         />
         {/* Bright illuminated progress portion */}
-        {!staticMode && (
+        {(!staticMode || realPct > 0) && (
           <div
-            className="absolute inset-y-0 left-0 transition-[width] duration-75 ease-linear"
+            className="absolute inset-y-0 left-0 transition-[width] duration-300 ease-out"
             style={{
-              width: `${displayPct}%`,
-              background: "linear-gradient(90deg,#ef4444,#f97316,#eab308,#84cc16,#22c55e)",
-              backgroundSize: `${(100 / Math.max(displayPct, 0.0001)) * 100}% 100%`,
+              width: `${Math.min(100, displayPct)}%`,
+              background:
+                staticMode && realPct >= 100
+                  ? "#22c55e"
+                  : "linear-gradient(90deg,#ef4444,#f97316,#eab308,#84cc16,#22c55e)",
+              backgroundSize:
+                staticMode && realPct >= 100
+                  ? undefined
+                  : `${(100 / Math.max(displayPct, 0.0001)) * 100}% 100%`,
               boxShadow: "0 0 12px rgba(255,255,255,0.55), inset 0 0 8px rgba(255,255,255,0.35)",
               filter: "saturate(1.3) brightness(1.1)",
             }}
           />
         )}
         {/* Glowing leading edge (the moving head) */}
-        {!staticMode && displayPct > 0 && (
+        {((!staticMode && displayPct > 0) || (staticMode && realPct > 0)) && (
           <>
             {/* outer pulse ring when paused at milestone */}
-            {pausedMilestone && (
+            {!staticMode && pausedMilestone && (
               <div
                 className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full pointer-events-none animate-ping"
                 style={{
@@ -531,9 +537,9 @@ function AchievementMeter({
               />
             )}
             <div
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-5 rounded-full pointer-events-none transition-[left] duration-75 ease-linear"
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-5 rounded-full pointer-events-none transition-[left] duration-300 ease-out"
               style={{
-                left: `${displayPct}%`,
+                left: `${Math.min(100, displayPct)}%`,
                 background: "white",
                 boxShadow: pausedMilestone
                   ? `0 0 10px 3px ${pausedMilestone.color}, 0 0 20px 6px ${pausedMilestone.color}80`
