@@ -523,10 +523,10 @@ function AchievementMeter({
           />
         )}
         {/* Glowing leading edge (the moving head) */}
-        {!staticMode && displayPct > 0 && (
+        {((!staticMode && displayPct > 0) || (staticMode && realPct > 0)) && (
           <>
             {/* outer pulse ring when paused at milestone */}
-            {pausedMilestone && (
+            {!staticMode && pausedMilestone && (
               <div
                 className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full pointer-events-none animate-ping"
                 style={{
@@ -537,9 +537,9 @@ function AchievementMeter({
               />
             )}
             <div
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-5 rounded-full pointer-events-none transition-[left] duration-75 ease-linear"
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-5 rounded-full pointer-events-none transition-[left] duration-300 ease-out"
               style={{
-                left: `${displayPct}%`,
+                left: `${Math.min(100, displayPct)}%`,
                 background: "white",
                 boxShadow: pausedMilestone
                   ? `0 0 10px 3px ${pausedMilestone.color}, 0 0 20px 6px ${pausedMilestone.color}80`
