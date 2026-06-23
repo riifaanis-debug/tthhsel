@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getWalletCustomers } from "@/lib/wallet.functions";
+import { getWalletCustomers } from "@/lib/wallet-read.functions";
 import { getSession } from "@/components/LoginGate";
 import { customerKey, formatCurrency, formatMoney, formatMoneyInput, parseMoneyInput } from "@/lib/wallet-types";
 import { useCustomerStates } from "@/lib/wallet-store";
